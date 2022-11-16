@@ -1,6 +1,7 @@
 using Cinemachine;
 using FishNet.Component.Transforming;
 using FishNet.Object;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -53,7 +54,7 @@ public class PlayerController : NetworkBehaviour
     private void Update()
     {
         if (vCam == null) return;
-        Debug.Log("v Cam is not null");
+
         bool isRunning = false;
 
         // Press Left Shift to run
@@ -68,28 +69,49 @@ public class PlayerController : NetworkBehaviour
         float movementDirectionY = moveDirection.y;
         moveDirection = (forward * curSpeedX) + (right * curSpeedY);
 
-        // Rotate player to look direction
+        RotationHandler();
+
+        JumpHandler(movementDirectionY);
+
+        // Move the controller
+        characterController.Move(moveDirection * Time.deltaTime);
+
+        WeaponFire();
+    }
+
+    /// <summary>
+    /// Rotate player to look direction
+    /// </summary>
+    private void RotationHandler()
+    {
         var camForward = vCam.transform.forward;
         camForward.y = 0;
         Quaternion targetDir = Quaternion.LookRotation(camForward);
         transform.rotation = Quaternion.Slerp(transform.rotation, targetDir, playerRot);
+    }
 
-        // Player Jump
+    private void JumpHandler(float moveDirY)
+    {
         if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
         {
             moveDirection.y = jumpSpeed;
         }
         else
         {
-            moveDirection.y = movementDirectionY;
+            moveDirection.y = moveDirY;
         }
 
         if (!characterController.isGrounded)
         {
             moveDirection.y -= gravity * Time.deltaTime;
         }
+    }
 
-        // Move the controller
-        characterController.Move(moveDirection * Time.deltaTime);
+    private void WeaponFire()
+    {
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            Debug.Log("Fire");
+        }
     }
 }
