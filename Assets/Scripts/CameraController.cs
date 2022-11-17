@@ -1,4 +1,5 @@
 using Cinemachine;
+using FishNet.Object;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -8,13 +9,16 @@ public class CameraController : MonoBehaviour
         FirstObjectNotifier.onFirstObjectSpawned += FirstObjectNotifier_onFirstObjectSpawned;
     }
 
+    private void OnDestroy()
+    {
+        FirstObjectNotifier.onFirstObjectSpawned -= FirstObjectNotifier_onFirstObjectSpawned; 
+    }
+
     private void FirstObjectNotifier_onFirstObjectSpawned(Transform obj)
     {
         CinemachineVirtualCamera vc = GetComponent<CinemachineVirtualCamera>();
         vc.Follow = obj;
-        if (obj.tag.Equals("Player"))
-        {
-            obj.GetComponent<PlayerController>().vCam = vc;
-        }
+        //obj.GetComponent<PlayerController>().vCam = vc;
     }
+
 }

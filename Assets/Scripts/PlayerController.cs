@@ -1,14 +1,19 @@
 using Cinemachine;
 using FishNet.Component.Transforming;
 using FishNet.Object;
-using Unity.VisualScripting;
+using FishNet.Object.Synchronizing;
 using UnityEngine;
 
 
-[RequireComponent(typeof(NetworkTransform))]
-[RequireComponent(typeof(CharacterController))]
 public class PlayerController : NetworkBehaviour
 {
+    public Camera cam;
+    public CinemachineVirtualCamera vCam;
+    public CinemachineBrain brainCam;
+    private CharacterController characterController;
+    [SerializeField]
+    private Transform playerModel;
+
     [Header("Move Value")]
     public float walkingSpeed = 7.5f;
     public float runningSpeed = 11.5f;
@@ -16,15 +21,24 @@ public class PlayerController : NetworkBehaviour
     public float gravity = 20.0f;
 
     [Header("Look Values")]
-    private float rotationX = 0;
     public float lookSpeed = 2.0f;
     public float lookXLimit = 45.0f;
     public float playerRot = 5.0f;
+    [SyncVar]
+    public Vector3 vCamPosition;
+    [SyncVar]
+    public Quaternion vCamRot;
 
-    [SerializeField] float cameraYOffset = 0.4f;
+    [Header("Weapon Values")]
+    [SerializeField]
+    private GameObject projectilePrefab;
+    public bool isFiring = false;
 
-    public CinemachineVirtualCamera vCam;
-    private CharacterController characterController;
+    [Header("Stats")]
+    public float maxHealth = 100f;
+    public float currentHealth = 100f;
+
+
     private Vector3 moveDirection = Vector3.zero;
 
     [HideInInspector] public bool canMove = true;
@@ -35,6 +49,10 @@ public class PlayerController : NetworkBehaviour
         base.OnStartClient();
         if (base.IsOwner)
         {
+            gameObject.name = this.IsHost ? "Server" : "Client";
+            vCam.enabled = true;
+            brainCam.enabled = true;
+            cam.enabled = true;
         }
         else
         {
@@ -44,16 +62,31 @@ public class PlayerController : NetworkBehaviour
 
     private void Start()
     {
-        characterController = GetComponent<CharacterController>();
+        characterController = GetComponentInChildren<CharacterController>();
+        currentHealth = maxHealth;
 
         // Lock cursor
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
     }
+    [ServerRpc]
+    public void UpdateValue()
+    {
+        vCamPosition = vCam.transform.position;
+        vCamRot = vCam.transform.rotation;
+    }
 
     private void Update()
     {
-        if (vCam == null) return;
+        if (vCam == null)   return;
+
+        if (currentHealth <= 0)
+        {
+            Death();
+            return;
+        }
+
+        UpdateValue();
 
         bool isRunning = false;
 
@@ -87,7 +120,7 @@ public class PlayerController : NetworkBehaviour
         var camForward = vCam.transform.forward;
         camForward.y = 0;
         Quaternion targetDir = Quaternion.LookRotation(camForward);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetDir, playerRot);
+        playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetDir, playerRot);
     }
 
     private void JumpHandler(float moveDirY)
@@ -109,9 +142,41 @@ public class PlayerController : NetworkBehaviour
 
     private void WeaponFire()
     {
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.F))
         {
             Debug.Log("Fire");
+            isFiring = true;
+            InstantiateProjectile();
         }
+        else
+        {
+            isFiring = false;
+        }
+    }
+
+    [ServerRpc]
+    private void InstantiateProjectile()
+    {
+        GameObject go = Instantiate(projectilePrefab, vCamPosition, vCamRot);
+        ServerManager.Spawn(go);
+        SetSpawnObject(go);
+    }
+
+    [ObserversRpc]
+    private void SetSpawnObject(GameObject go)
+    {
+        Projectile proj = go.GetComponent<Projectile>();
+        proj.Init(this, 100f, 2f);
+        SetSpawnObject(go);
+    }
+
+    public void UpdateHealth(float amount)
+    {
+        currentHealth += amount;
+    }
+
+    private void Death()
+    {
+        Debug.Log("Player " + " " + " is dead!");
     }
 }

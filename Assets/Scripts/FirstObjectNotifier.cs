@@ -15,6 +15,7 @@ public class FirstObjectNotifier : NetworkBehaviour
             if (nob == base.NetworkObject)
             {
                 onFirstObjectSpawned?.Invoke(transform);
+                Debug.Log("Invoked");
             }
         }
     }
