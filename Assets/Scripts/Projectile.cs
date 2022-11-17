@@ -33,11 +33,15 @@ public class Projectile : NetworkBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("projectile hit something!: " + other.tag);
         if (other.CompareTag("Player"))
         {
-            PlayerController player = other.GetComponent<PlayerController>();
-            if (_player != player)
+            Debug.Log("projectile hit a Player!");
+            PlayerController player = other.GetComponentInParent<PlayerController>();
+            if (_player == null) Debug.LogError("Player Controller reference cannot be null on projectile!");
+            if (_player != player && _player != null)
             {
+                Debug.Log("Player: " + player.gameObject.name + " took " + _damage + " points of damage.");
                 player.UpdateHealth(-_damage);
                 DespawnObject(gameObject);
             }

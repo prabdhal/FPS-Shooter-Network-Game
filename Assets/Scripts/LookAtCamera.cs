@@ -4,8 +4,15 @@ public class LookAtCamera : MonoBehaviour
 {
     [SerializeField] Camera _camera;
 
-    void Update()
+
+    private void Update()
     {
-        transform.LookAt(_camera.transform);
+        if (_camera == null)
+        {
+            _camera = Camera.main;
+            return;
+        }
+
+        //transform.LookAt(_camera.transform);
     }
 }

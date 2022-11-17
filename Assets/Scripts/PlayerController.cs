@@ -10,6 +10,7 @@ public class PlayerController : NetworkBehaviour
     public Camera cam;
     public CinemachineVirtualCamera vCam;
     public CinemachineBrain brainCam;
+    public AudioListener audioListener;
     private CharacterController characterController;
     [SerializeField]
     private Transform playerModel;
@@ -36,6 +37,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Stats")]
     public float maxHealth = 100f;
+    [SyncVar] 
     public float currentHealth = 100f;
 
 
@@ -53,6 +55,7 @@ public class PlayerController : NetworkBehaviour
             vCam.enabled = true;
             brainCam.enabled = true;
             cam.enabled = true;
+            audioListener.enabled = true;
         }
         else
         {
@@ -69,12 +72,6 @@ public class PlayerController : NetworkBehaviour
         //Cursor.lockState = CursorLockMode.Locked;
         //Cursor.visible = false;
     }
-    [ServerRpc]
-    public void UpdateValue()
-    {
-        vCamPosition = vCam.transform.position;
-        vCamRot = vCam.transform.rotation;
-    }
 
     private void Update()
     {
@@ -86,7 +83,7 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        UpdateValue();
+        //UpdateValue();
 
         bool isRunning = false;
 
@@ -142,11 +139,12 @@ public class PlayerController : NetworkBehaviour
 
     private void WeaponFire()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKey(KeyCode.F))
         {
             Debug.Log("Fire");
             isFiring = true;
-            InstantiateProjectile();
+            //InstantiateProjectile();
+            ActivateRaycast(20f);
         }
         else
         {
@@ -155,9 +153,26 @@ public class PlayerController : NetworkBehaviour
     }
 
     [ServerRpc]
+    private void ActivateRaycast(float range)
+    {
+        Vector3 origin = vCam.transform.position;
+        Vector3 direction = vCam.transform.forward * range;
+        RaycastHit hit;
+        Debug.Log("Firing Raycast at distance: " + range);
+
+        if (Physics.Raycast(origin, direction, out hit))
+        {
+            Debug.Log("hit: " + hit.collider.name);
+            Debug.DrawRay(origin, direction, Color.red);
+            if (hit.collider.tag.Equals("Player"))
+                Debug.Log("Raycast Hit Player!");
+        }
+    }
+
+    [ServerRpc]
     private void InstantiateProjectile()
     {
-        GameObject go = Instantiate(projectilePrefab, vCamPosition, vCamRot);
+        GameObject go = Instantiate(projectilePrefab, vCam.transform.position, vCam.transform.rotation);
         ServerManager.Spawn(go);
         SetSpawnObject(go);
     }
@@ -166,10 +181,11 @@ public class PlayerController : NetworkBehaviour
     private void SetSpawnObject(GameObject go)
     {
         Projectile proj = go.GetComponent<Projectile>();
-        proj.Init(this, 100f, 2f);
+        proj.Init(this, 25f, 2f);
         SetSpawnObject(go);
     }
 
+    [ServerRpc]
     public void UpdateHealth(float amount)
     {
         currentHealth += amount;
