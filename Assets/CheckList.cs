@@ -18,6 +18,9 @@
  * Add Pick up weapon functionality
  * Update automatic weapon click fire vs general fire rate (faster to click and fire...)
  * Add UI to show player is reloading
+ * Add Team colours and option to change teams via buttons
+ * 
+ * Add aim down sight for some weapons like ARs, Sniper rifles
  * 
  * 
  * 
