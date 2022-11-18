@@ -125,4 +125,8 @@ public class Weapon : NetworkBehaviour
         Debug.Log(-_damage + " points of damage applied to " + target.name);
     }
 
+    private void Reload()
+    {
+
+    }
 }
