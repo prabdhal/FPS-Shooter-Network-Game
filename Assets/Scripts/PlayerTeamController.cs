@@ -3,10 +3,11 @@ using UnityEngine;
 
 public class PlayerTeamController : NetworkBehaviour
 {
+    private PlayerHUD playerHUD;
     [SerializeField]
     private MeshRenderer playerMaterial;
 
-    public TeamColor currentTeam;
+    public TeamColor currentTeam = TeamColor.Neutral;
 
     [SerializeField]
     private Color teamRed = Color.red;
@@ -29,6 +30,12 @@ public class PlayerTeamController : NetworkBehaviour
         {
             gameObject.GetComponent<PlayerTeamController>().enabled = false;
         }
+    }
+
+    private void Start()
+    {
+        playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
+        playerHUD.UpdatePlayerTeamColor(currentTeam.ToString());
     }
 
     private void Update()
@@ -67,6 +74,7 @@ public class PlayerTeamController : NetworkBehaviour
     {
         playerMaterial.material.color = color;
         currentTeam = GetTeamColor(color);
+        playerHUD.UpdatePlayerTeamColor(currentTeam.ToString());
     }
 
     private TeamColor GetTeamColor(Color color)

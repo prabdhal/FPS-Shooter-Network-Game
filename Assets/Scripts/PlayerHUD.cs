@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class PlayerHUD : MonoBehaviour
 {
     public Image crosshairImage;
+    public TextMeshProUGUI _playerTeamColor;
     public TextMeshProUGUI _playerHealthText;
     public TextMeshProUGUI _activeWeaponText;
     public TextMeshProUGUI _ammoText;
@@ -13,6 +14,11 @@ public class PlayerHUD : MonoBehaviour
     private void Start()
     {
         _feedbackText.gameObject.SetActive(false);
+    }
+
+    public void UpdatePlayerTeamColor(string teamColor)
+    {
+        _playerTeamColor.text = "Team: " + teamColor;
     }
 
     public void UpdateActiveWeapon(string weaponName)
