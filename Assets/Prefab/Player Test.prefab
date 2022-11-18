@@ -832,7 +832,7 @@ GameObject:
   - component: {fileID: 8689619415655539846}
   - component: {fileID: 8689619415655539896}
   m_Layer: 0
-  m_Name: Player own
+  m_Name: Player Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -887,7 +887,7 @@ MonoBehaviour:
   <PrefabId>k__BackingField: 3
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 10005289085135085568
+  <AssetPathHash>k__BackingField: 7617803255808744406
   _sceneNetworkObjects:
   - {fileID: 8689619415655539846}
   - {fileID: 0}

@@ -4,28 +4,46 @@ using UnityEngine.UI;
 
 public class PlayerHUD : MonoBehaviour
 {
-    public Image crosshair;
-    public TextMeshProUGUI _playerHealth;
-    public TextMeshProUGUI _activeWeapon;
-    public TextMeshProUGUI _ammo;
+    public Image crosshairImage;
+    public TextMeshProUGUI _playerHealthText;
+    public TextMeshProUGUI _activeWeaponText;
+    public TextMeshProUGUI _ammoText;
+    public TextMeshProUGUI _feedbackText;
+
+    private void Start()
+    {
+        _feedbackText.gameObject.SetActive(false);
+    }
 
     public void UpdateActiveWeapon(string weaponName)
     {
-        _activeWeapon.text = "Weapon: " + weaponName;
+        _activeWeaponText.text = "Weapon: " + weaponName;
     }
 
     public void UpdateAmmo(int ammo)
     {
-        _ammo.text = "Ammo: " + ammo.ToString();
+        _ammoText.text = "Ammo: " + ammo.ToString();
     }
 
-    public void UpdateAmmo(string ammo)
+    public void UpdateAmmo(string curMagAmmo, string curAmmo)
     {
-        _ammo.text = "Ammo: " + ammo;
+        _ammoText.text = curMagAmmo + " / " + curAmmo;
     }
 
     public void UpdatePlayerHealth(float health)
     {
-        _playerHealth.text = "Player HP: " + health.ToString(); 
+        _playerHealthText.text = "Player HP: " + health.ToString(); 
+    }
+
+    public void UpdateFeedbackText(string feedback)
+    {
+        _feedbackText.text = feedback;
+        _feedbackText.gameObject.SetActive(true);
+    }
+
+    public void DisableFeedbackText()
+    {
+        _feedbackText.gameObject.SetActive(false);
+        _feedbackText.text = "";
     }
 }

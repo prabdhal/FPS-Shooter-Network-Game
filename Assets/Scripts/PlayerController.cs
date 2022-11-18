@@ -78,13 +78,15 @@ public class PlayerController : NetworkBehaviour
         playerHUD.UpdatePlayerHealth(currentHealth);
         if (activeWeapon != null)
         {
-            playerHUD.UpdateActiveWeapon(activeWeapon._name);
-            playerHUD.UpdateAmmo(activeWeapon._currentAmmo);
+            playerHUD.UpdateActiveWeapon(activeWeapon.Name);
+            playerHUD.UpdateAmmo(activeWeapon.CurrentAmmo);
+            Debug.Log("UpdateAmmo: ");
         }
         else
         {
-            playerHUD.UpdateActiveWeapon(defaultWeapon._name);
-            playerHUD.UpdateAmmo("N/A");
+            playerHUD.UpdateActiveWeapon(defaultWeapon.Name);
+            playerHUD.UpdateAmmo("N", "A");
+            Debug.Log("UpdateAmmo: ");
         }
 
         // Lock cursor
@@ -164,15 +166,9 @@ public class PlayerController : NetworkBehaviour
     private void FireWeaponHandler()
     {
         if (activeWeapon != null)
-        {
-            Debug.Log("Active weapon is active");
             FireWeapon(activeWeapon, this);
-        }
         else
-        {
-            Debug.Log("Default weapon is active");
             FireWeapon(defaultWeapon, this);
-        }
     }
 
     /// <summary>
@@ -180,8 +176,7 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     private void FireWeapon(Weapon weapon, PlayerController player)
     {
-        Debug.Log("Player Controller FireWeapon");
-        weapon.FireWeapon(this);
+        weapon.WeaponUpdate(this);
     }
 
     /// <summary>
@@ -192,23 +187,20 @@ public class PlayerController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             activeWeapon = null;
-            playerHUD.UpdateActiveWeapon(defaultWeapon._name);
-            playerHUD.UpdateAmmo("N/A");
-            Debug.Log("Equipped: " + defaultWeapon._name);
+            playerHUD.UpdateActiveWeapon(defaultWeapon.Name);
+            playerHUD.UpdateAmmo("N", "A");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             activeWeapon = pistol.GetComponent<Weapon>();
-            playerHUD.UpdateActiveWeapon(activeWeapon._name);
-            playerHUD.UpdateAmmo(activeWeapon._currentAmmo);
-            Debug.Log("Equipped: " + activeWeapon._name);
+            playerHUD.UpdateActiveWeapon(activeWeapon.Name);
+            playerHUD.UpdateAmmo(activeWeapon.CurrentMagAmmo.ToString(), activeWeapon.CurrentAmmo.ToString());
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
-            activeWeapon = submachine.GetComponent<Weapon>(); ;
-            playerHUD.UpdateActiveWeapon(activeWeapon._name);
-            playerHUD.UpdateAmmo(activeWeapon._currentAmmo);
-            Debug.Log("Equipped: " + activeWeapon._name);
+            activeWeapon = submachine.GetComponent<Weapon>();
+            playerHUD.UpdateActiveWeapon(activeWeapon.Name);
+            playerHUD.UpdateAmmo(activeWeapon.CurrentMagAmmo.ToString(), activeWeapon.CurrentAmmo.ToString());
         }
     }
 

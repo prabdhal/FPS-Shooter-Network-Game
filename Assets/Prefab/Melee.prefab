@@ -118,13 +118,14 @@ MonoBehaviour:
   _name: Melee
   _damage: 20
   _range: 2
-  maxAmmoCapacity: 30
-  maxMagAmmoCapacity: 5
-  _currentAmmo: 30
-  _currentMagAmmo: 0
   _fireRate: 2
   _fireRateTimer: 0
-  _fireType: 1
+  _reloadSpeed: 1
+  _reloadSpeedTimer: 0
+  _maxAmmoCapacity: 0
+  _maxMagAmmoCapacity: 0
+  _startingAmmo: 0
+  _fireType: 3
 --- !u!114 &6317808587173025189
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -5,6 +5,7 @@
  * Raycasting functionality 
  * > when holding the Fire button, a raycast will be active and trigger damage depending on weapon "Fire rate"
  * Create crosshair for aim and fire
+ * Add Reload functionality 
  *
  *
  *
@@ -14,8 +15,10 @@
  * Modify raycast get component portion to be more efficient
  * 
  * == Weapon
- * Add Reload functionality 
  * Add Pick up weapon functionality
+ * Update automatic weapon click fire vs general fire rate (faster to click and fire...)
+ * Add UI to show player is reloading
+ * 
  * 
  * 
  * 

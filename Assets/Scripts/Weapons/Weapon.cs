@@ -4,58 +4,97 @@ using UnityEngine;
 
 public class Weapon : NetworkBehaviour
 {
-    public string Name { get; }
-    public string _name = "Default Weapon";
-    public float Damage { get; set; }
-    public float _damage = 5f;
-    public float Range { get; }
-    public float _range = 15f;
-    public int MaxAmmoCapacity { get; }
-    public int maxAmmoCapacity = 30;
-    public int MaxMagAmmoCapacity { get; }
-    public int maxMagAmmoCapacity = 5;
-    public int CurrentAmmo { get; }
-    public int _currentAmmo = 30;
-    public int CurrentMagAmmo { get; }
-    public int _currentMagAmmo;
-    public float FireRate { get; }
-    public float _fireRate = 1f;
-    public float FireRateTimer { get; }
-    public float _fireRateTimer = 0f;
-    public bool HasAmmo { get; }
-    private bool _hasAmmo = true;
-    public bool IsEmptyClip { get; }
-    private bool _isEmptyClip = false;
-    public bool IsEmptyWeapon { get; }
-    private bool _isEmptyWeapon = false;
-    public WeaponFireType FireType { get; }
-    public WeaponFireType _fireType;
+    // weapon values
+    [Header("Weapon Values")]
+    [SerializeField]
+    protected string _name = "Default Weapon";
+    public string Name { get { return _name; } }
+    [SerializeField]
+    protected float _damage = 5f;
+    public float Damage { get { return _damage; } }
+    [SerializeField]
+    protected float _range = 15f;
+    public float Range { get { return _range; } }
+    [SerializeField]
+    protected float _fireRate = 1f;
+    public float FireRate { get { return _fireRate; } }
+    [SerializeField]
+    protected float _fireRateTimer = 0f;
+    public float FireRateTimer { get { return _fireRateTimer; } }
+    [SerializeField]
+    protected float _reloadSpeed = 1f;
+    public float ReloadSpeed { get { return _reloadSpeed; } }
+    public float _reloadSpeedTimer = 0;
 
 
+    // ammo values
+    [Header("Ammo Values")]
+    [SerializeField]
+    protected int _maxAmmoCapacity = 30;
+    public int MaxAmmoCapacity { get { return _maxAmmoCapacity; } }
+    [SerializeField]
+    protected int _maxMagAmmoCapacity = 5;
+    public int MaxMagAmmoCapacity { get { return _maxMagAmmoCapacity; } }
+    [SerializeField]
+    protected int _startingAmmo = 15;
+    public int StartingAmmo { get { return _startingAmmo; } }
+    protected int _currentAmmo = 30;
+    public int CurrentAmmo { get { return _currentAmmo; } }
+    protected int _currentMagAmmo;
+    public int CurrentMagAmmo { get { return _currentMagAmmo; } }
+
+    // useful props
+    public bool IsEmptyClip { get { return _currentMagAmmo <= 0 && !FireType.Equals(WeaponFireType.Melee); } }    
+    public bool IsEmptyWeapon { get { return _currentAmmo <= 0 && _currentMagAmmo <= 0 && !FireType.Equals(WeaponFireType.Melee); } }
+    protected bool _isReloading = false;
+    public bool IsReloading { get { return _isReloading; } }
+    [SerializeField]
+    protected WeaponFireType _fireType;
+    public WeaponFireType FireType { get { return _fireType; } }
+
+
+
+    private void Start()
+    {
+        // ensures starting ammo and max mag ammo capacity are lower than max values
+        if (_startingAmmo > _maxAmmoCapacity)
+            _startingAmmo = _maxAmmoCapacity;
+        if (_maxMagAmmoCapacity > _maxAmmoCapacity)
+            _maxMagAmmoCapacity = _maxAmmoCapacity;
+
+
+        _currentAmmo = _startingAmmo;
+        _currentMagAmmo = _maxMagAmmoCapacity;
+    }
+
+    public void WeaponUpdate(PlayerController player)
+    {
+        FireWeapon(player);
+        ReloadHander(player);
+    }
+
+
+    #region Weapon Firing Logic
     /// <summary>
     /// Returns the appropriate firing input depending on WeaponFireType.
     /// </summary>
     /// <param name="player"></param>
-    public virtual void FireWeapon(PlayerController player)
+    protected virtual void FireWeapon(PlayerController player)
     {
         if (_fireType.Equals(WeaponFireType.Automatic))
         {
             if (Input.GetKey(KeyCode.F))
             {
-                Debug.Log("Firing automatic weapon");
-                FireRateHandler(player.vCam);
+                FireRateHandler(player);
             }
             else
-            {
-                Debug.Log("Stopped firing!");
                 _fireRateTimer = 0f;
-            }
         }
         else if (_fireType.Equals(WeaponFireType.SemiAutomatic))
         {
             if (Input.GetKeyUp(KeyCode.F))
             {
-                FireRateHandler(player.vCam);
+                FireRateHandler(player);
             }
             else
                 _fireRateTimer = 0f;
@@ -64,7 +103,16 @@ public class Weapon : NetworkBehaviour
         {
             if (Input.GetKeyUp(KeyCode.F))
             {
-                FireRateHandler(player.vCam);
+                FireRateHandler(player);
+            }
+            else
+                _fireRateTimer = 0f;
+        }
+        else if (_fireType.Equals(WeaponFireType.Melee))
+        {
+            if (Input.GetKey(KeyCode.F))
+            {
+                FireRateHandler(player);
             }
             else
                 _fireRateTimer = 0f;
@@ -75,14 +123,27 @@ public class Weapon : NetworkBehaviour
     /// Handles the fire rate cooldown of the weapon
     /// </summary>
     /// <param name="cam"></param>
-    private void FireRateHandler(CinemachineVirtualCamera cam)
+    private void FireRateHandler(PlayerController player)
     {
+        // Checks if player has ammo
+        if (IsEmptyClip || IsEmptyWeapon || _isReloading)
+        {
+            Debug.Log("Player needs to reload!");
+            return;
+        }
+
         if (_fireRateTimer <= 0)
         {
             Debug.Log("Raycast/Bullet fired!");
-            ActivateRaycast(cam);
+            ActivateRaycast(player.vCam);
             _fireRateTimer = _fireRate;
-            _currentAmmo -= 1;
+            
+            // Update ammo ONLY if WeaponFireType is NOT Melee   
+            if (!FireType.Equals(WeaponFireType.Melee))
+            {
+                _currentMagAmmo -= 1;
+                player.playerHUD.UpdateAmmo(_currentMagAmmo.ToString(), _currentAmmo.ToString());
+            }
         }
         else
         {
@@ -124,9 +185,69 @@ public class Weapon : NetworkBehaviour
         target.currentHealth -= _damage;
         Debug.Log(-_damage + " points of damage applied to " + target.name);
     }
+    #endregion
 
-    private void Reload()
+    #region Reloading Logic
+    /// <summary>
+    /// Initials weapon reloading
+    /// </summary>
+    private void InitiateReload(PlayerController player)
     {
-
+        if (Input.GetKeyDown(KeyCode.R) && !_isReloading)
+        {
+            // returns if no ammo
+            if (IsEmptyWeapon)
+            {
+                Debug.Log("You cannot reload since you have no ammo!");
+                return;
+            }
+            _reloadSpeedTimer = 0;
+            _isReloading = true;
+            player.playerHUD.UpdateFeedbackText("Reloading...");
+        }
     }
+
+    /// <summary>
+    /// Handles reload cooldown
+    /// </summary>
+    protected virtual void ReloadHander(PlayerController player)
+    {
+        if (_currentMagAmmo < _maxMagAmmoCapacity)
+            InitiateReload(player);
+        else
+            Debug.Log("Full Mag Clip!");
+
+        // reload after reload time
+        if (_reloadSpeedTimer >= _reloadSpeed)
+        {
+            Reload(player);
+            _reloadSpeedTimer = 0;
+            _isReloading = false;
+            player.playerHUD.DisableFeedbackText();
+        }
+        else if (_isReloading)
+        {
+            Debug.Log("Reloading");
+            _reloadSpeedTimer += Time.deltaTime;
+        }
+    }
+
+    /// <summary>
+    /// Updates the ammo amount in the magizine and total ammo
+    /// </summary>
+    private void Reload(PlayerController player)
+    {
+        int ammoNeeded = _maxMagAmmoCapacity - _currentMagAmmo;
+        if (ammoNeeded > _currentAmmo)
+            ammoNeeded = _currentAmmo;
+        
+        _currentMagAmmo += ammoNeeded;
+        
+        _currentAmmo -= ammoNeeded;
+        if (_currentAmmo <= 0) 
+            _currentAmmo = 0;
+
+        player.playerHUD.UpdateAmmo(_currentMagAmmo.ToString(), _currentAmmo.ToString());
+    }
+    #endregion 
 }

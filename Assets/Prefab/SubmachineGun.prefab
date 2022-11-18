@@ -118,12 +118,13 @@ MonoBehaviour:
   _name: Submachine Gun
   _damage: 12
   _range: 30
-  maxAmmoCapacity: 30
-  maxMagAmmoCapacity: 5
-  _currentAmmo: 30
-  _currentMagAmmo: 0
-  _fireRate: 0.5
+  _fireRate: 0.3
   _fireRateTimer: 0
+  _reloadSpeed: 2
+  _reloadSpeedTimer: 0
+  _maxAmmoCapacity: 120
+  _maxMagAmmoCapacity: 20
+  _startingAmmo: 60
   _fireType: 1
 --- !u!114 &5613694650824037431
 MonoBehaviour:
