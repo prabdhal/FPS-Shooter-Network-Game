@@ -2,6 +2,7 @@ using Cinemachine;
 using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using System.Threading;
 using UnityEngine;
 
 
@@ -15,6 +16,7 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]
     private Transform playerModel;
 
+
     [Header("Move Value")]
     public float walkingSpeed = 7.5f;
     public float runningSpeed = 11.5f;
@@ -25,20 +27,19 @@ public class PlayerController : NetworkBehaviour
     public float lookSpeed = 2.0f;
     public float lookXLimit = 45.0f;
     public float playerRot = 5.0f;
-    [SyncVar]
-    public Vector3 vCamPosition;
-    [SyncVar]
-    public Quaternion vCamRot;
-
-    [Header("Weapon Values")]
-    [SerializeField]
-    private GameObject projectilePrefab;
-    public bool isFiring = false;
 
     [Header("Stats")]
     public float maxHealth = 100f;
     [SyncVar] 
     public float currentHealth = 100f;
+
+    [Header("Weapon")]
+    //private GameObject projectilePrefab;
+    public Weapon activeWeapon;
+    public Weapon defaultWeapon;
+    public Weapon equippedWeapon;
+    public bool isFiring = false;
+    private float fireTimer = 0;
 
 
     private Vector3 moveDirection = Vector3.zero;
@@ -77,6 +78,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (vCam == null)   return;
 
+
         if (currentHealth <= 0)
         {
             Death();
@@ -106,7 +108,16 @@ public class PlayerController : NetworkBehaviour
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
 
-        WeaponFire();
+        if (activeWeapon != null)
+        {
+            Debug.Log("Active weapon is active");
+            SFireWeapon(activeWeapon, this);
+        }
+        else
+        {
+            Debug.Log("Default weapon is active");
+            SFireWeapon(defaultWeapon, this);
+        }
     }
 
     /// <summary>
@@ -137,45 +148,20 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void WeaponFire()
+    private void SFireWeapon(Weapon weapon, PlayerController player)
     {
-        if (Input.GetKey(KeyCode.F))
-        {
-            Debug.Log("Fire");
-            isFiring = true;
-            //InstantiateProjectile();
-            ActivateRaycast(20f);
-        }
-        else
-        {
-            isFiring = false;
-        }
+        Debug.Log("Player Controller FireWeapon");
+        weapon.FireWeapon(this);
     }
 
-    [ServerRpc]
-    private void ActivateRaycast(float range)
-    {
-        Vector3 origin = vCam.transform.position;
-        Vector3 direction = vCam.transform.forward * range;
-        RaycastHit hit;
-        Debug.Log("Firing Raycast at distance: " + range);
 
-        if (Physics.Raycast(origin, direction, out hit))
-        {
-            Debug.Log("hit: " + hit.collider.name);
-            Debug.DrawRay(origin, direction, Color.red);
-            if (hit.collider.tag.Equals("Player"))
-                Debug.Log("Raycast Hit Player!");
-        }
-    }
-
-    [ServerRpc]
-    private void InstantiateProjectile()
-    {
-        GameObject go = Instantiate(projectilePrefab, vCam.transform.position, vCam.transform.rotation);
-        ServerManager.Spawn(go);
-        SetSpawnObject(go);
-    }
+    //[ServerRpc]
+    //private void InstantiateProjectile()
+    //{
+    //    GameObject go = Instantiate(projectilePrefab, vCam.transform.position, vCam.transform.rotation);
+    //    ServerManager.Spawn(go);
+    //    SetSpawnObject(go);
+    //}
 
     [ObserversRpc]
     private void SetSpawnObject(GameObject go)
@@ -189,6 +175,7 @@ public class PlayerController : NetworkBehaviour
     public void UpdateHealth(float amount)
     {
         currentHealth += amount;
+        Debug.Log(gameObject.name + " taking " + amount + " points of damage");
     }
 
     private void Death()
