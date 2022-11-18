@@ -118,6 +118,7 @@ MonoBehaviour:
   _name: Melee
   _damage: 20
   _range: 2
+  _ammo: 0
   _fireRate: 2
   fireRateTimer: 0
   fireType: 1

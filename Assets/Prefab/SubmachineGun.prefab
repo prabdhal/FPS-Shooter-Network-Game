@@ -118,6 +118,7 @@ MonoBehaviour:
   _name: Submachine Gun
   _damage: 12
   _range: 30
+  _ammo: 20
   _fireRate: 0.5
   fireRateTimer: 0
   fireType: 1

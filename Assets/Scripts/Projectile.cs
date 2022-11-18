@@ -42,7 +42,6 @@ public class Projectile : NetworkBehaviour
             if (_player != player && _player != null)
             {
                 Debug.Log("Player: " + player.gameObject.name + " took " + _damage + " points of damage.");
-                player.UpdateHealth(-_damage);
                 DespawnObject(gameObject);
             }
         }

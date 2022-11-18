@@ -1,20 +1,26 @@
 using Cinemachine;
-using FishNet.Component.Transforming;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using System.Threading;
+using FishNet.Transporting;
 using UnityEngine;
 
 
 public class PlayerController : NetworkBehaviour
 {
+    [Header("Camera References")]
     public Camera cam;
     public CinemachineVirtualCamera vCam;
     public CinemachineBrain brainCam;
     public AudioListener audioListener;
+
+    [Header("Player Component References")]
     private CharacterController characterController;
     [SerializeField]
     private Transform playerModel;
+
+    [Header("Other References")]
+    public PlayerHUD playerHUD;
+
 
 
     [Header("Move Value")]
@@ -30,17 +36,17 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Stats")]
     public float maxHealth = 100f;
-    [SyncVar] 
+    [SyncVar(Channel = Channel.Unreliable, OnChange = nameof(UpdateHealthHUD))]
     public float currentHealth = 100f;
 
     [Header("Weapon")]
     //private GameObject projectilePrefab;
     public Weapon activeWeapon;
     public Weapon defaultWeapon;
-    public Weapon equippedWeapon;
+    public Weapon pistol;
+    public Weapon submachine;
     public bool isFiring = false;
     private float fireTimer = 0;
-
 
     private Vector3 moveDirection = Vector3.zero;
 
@@ -68,6 +74,18 @@ public class PlayerController : NetworkBehaviour
     {
         characterController = GetComponentInChildren<CharacterController>();
         currentHealth = maxHealth;
+        playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
+        playerHUD.UpdatePlayerHealth(currentHealth);
+        if (activeWeapon != null)
+        {
+            playerHUD.UpdateActiveWeapon(activeWeapon._name);
+            playerHUD.UpdateAmmo(activeWeapon._ammo);
+        }
+        else
+        {
+            playerHUD.UpdateActiveWeapon(defaultWeapon._name);
+            playerHUD.UpdateAmmo("N/A");
+        }
 
         // Lock cursor
         //Cursor.lockState = CursorLockMode.Locked;
@@ -76,7 +94,7 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
-        if (vCam == null)   return;
+        if (vCam == null) return;
 
 
         if (currentHealth <= 0)
@@ -84,8 +102,6 @@ public class PlayerController : NetworkBehaviour
             Death();
             return;
         }
-
-        //UpdateValue();
 
         bool isRunning = false;
 
@@ -102,22 +118,13 @@ public class PlayerController : NetworkBehaviour
         moveDirection = (forward * curSpeedX) + (right * curSpeedY);
 
         RotationHandler();
-
         JumpHandler(movementDirectionY);
 
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
 
-        if (activeWeapon != null)
-        {
-            Debug.Log("Active weapon is active");
-            SFireWeapon(activeWeapon, this);
-        }
-        else
-        {
-            Debug.Log("Default weapon is active");
-            SFireWeapon(defaultWeapon, this);
-        }
+        FireWeaponHandler();
+        WeaponSwapHandler();
     }
 
     /// <summary>
@@ -131,6 +138,9 @@ public class PlayerController : NetworkBehaviour
         playerModel.rotation = Quaternion.Slerp(playerModel.rotation, targetDir, playerRot);
     }
 
+    /// <summary>
+    /// Controls player jump 
+    /// </summary>
     private void JumpHandler(float moveDirY)
     {
         if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
@@ -148,12 +158,59 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private void SFireWeapon(Weapon weapon, PlayerController player)
+    /// <summary>
+    /// Checks for active weapon to fire, otherwise player will use melee attack only
+    /// </summary>
+    private void FireWeaponHandler()
+    {
+        if (activeWeapon != null)
+        {
+            Debug.Log("Active weapon is active");
+            FireWeapon(activeWeapon, this);
+        }
+        else
+        {
+            Debug.Log("Default weapon is active");
+            FireWeapon(defaultWeapon, this);
+        }
+    }
+
+    /// <summary>
+    /// Runs the FireWeapon method on the weapon base class
+    /// </summary>
+    private void FireWeapon(Weapon weapon, PlayerController player)
     {
         Debug.Log("Player Controller FireWeapon");
         weapon.FireWeapon(this);
     }
 
+    /// <summary>
+    /// Handler player weapon equipping
+    /// </summary>
+    private void WeaponSwapHandler()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            activeWeapon = null;
+            playerHUD.UpdateActiveWeapon(defaultWeapon._name);
+            playerHUD.UpdateAmmo("N/A");
+            Debug.Log("Equipped: " + defaultWeapon._name);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            activeWeapon = pistol.GetComponent<Weapon>();
+            playerHUD.UpdateActiveWeapon(activeWeapon._name);
+            playerHUD.UpdateAmmo(activeWeapon._ammo);
+            Debug.Log("Equipped: " + activeWeapon._name);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            activeWeapon = submachine.GetComponent<Weapon>(); ;
+            playerHUD.UpdateActiveWeapon(activeWeapon._name);
+            playerHUD.UpdateAmmo(activeWeapon._ammo);
+            Debug.Log("Equipped: " + activeWeapon._name);
+        }
+    }
 
     //[ServerRpc]
     //private void InstantiateProjectile()
@@ -170,12 +227,10 @@ public class PlayerController : NetworkBehaviour
         proj.Init(this, 25f, 2f);
         SetSpawnObject(go);
     }
-
-    [ServerRpc]
-    public void UpdateHealth(float amount)
+    
+    private void UpdateHealthHUD(float prev, float next, bool asServer)
     {
-        currentHealth += amount;
-        Debug.Log(gameObject.name + " taking " + amount + " points of damage");
+        playerHUD.UpdatePlayerHealth(next);
     }
 
     private void Death()
