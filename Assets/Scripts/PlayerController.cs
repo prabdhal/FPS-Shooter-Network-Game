@@ -79,7 +79,7 @@ public class PlayerController : NetworkBehaviour
         if (activeWeapon != null)
         {
             playerHUD.UpdateActiveWeapon(activeWeapon._name);
-            playerHUD.UpdateAmmo(activeWeapon._ammo);
+            playerHUD.UpdateAmmo(activeWeapon._currentAmmo);
         }
         else
         {
@@ -200,14 +200,14 @@ public class PlayerController : NetworkBehaviour
         {
             activeWeapon = pistol.GetComponent<Weapon>();
             playerHUD.UpdateActiveWeapon(activeWeapon._name);
-            playerHUD.UpdateAmmo(activeWeapon._ammo);
+            playerHUD.UpdateAmmo(activeWeapon._currentAmmo);
             Debug.Log("Equipped: " + activeWeapon._name);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             activeWeapon = submachine.GetComponent<Weapon>(); ;
             playerHUD.UpdateActiveWeapon(activeWeapon._name);
-            playerHUD.UpdateAmmo(activeWeapon._ammo);
+            playerHUD.UpdateAmmo(activeWeapon._currentAmmo);
             Debug.Log("Equipped: " + activeWeapon._name);
         }
     }

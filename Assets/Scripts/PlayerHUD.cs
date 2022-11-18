@@ -11,7 +11,7 @@ public class PlayerHUD : MonoBehaviour
 
     public void UpdateActiveWeapon(string weaponName)
     {
-        _activeWeapon.text = "Active Weapon: " + weaponName;
+        _activeWeapon.text = "Weapon: " + weaponName;
     }
 
     public void UpdateAmmo(int ammo)
