@@ -214,7 +214,6 @@ public class PlayerController : NetworkBehaviour
     {
         Projectile proj = go.GetComponent<Projectile>();
         proj.Init(this, 25f, 2f);
-        SetSpawnObject(go);
     }
     
     private void UpdateHealthHUD(float prev, float next, bool asServer)
@@ -225,5 +224,6 @@ public class PlayerController : NetworkBehaviour
     private void Death()
     {
         Debug.Log("Player " + " " + " is dead!");
+        playerHUD.sceneFader.gameObject.SetActive(true);
     }
 }
