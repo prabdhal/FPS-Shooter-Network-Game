@@ -187,6 +187,10 @@ public class Weapon : NetworkBehaviour
         if (!target.playerTeam.currentTeam.Equals(player.playerTeam.currentTeam))
         {
             target.currentHealth -= _damage;
+            if (target.currentHealth <= 0)
+            {
+                player.playerHUD.UpdateGlobalMessagingWindow(player.name, target.name);
+            }
             Debug.Log(-_damage + " points of damage applied to " + target.name);
         }
         else

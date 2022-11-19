@@ -224,6 +224,20 @@ public class PlayerController : NetworkBehaviour
     private void Death()
     {
         Debug.Log("Player " + " " + " is dead!");
+        playerModel.tag = "Untagged";
+        DeathHandler();
         playerHUD.sceneFader.gameObject.SetActive(true);
+    }
+
+    [ServerRpc]
+    private void DeathHandler()
+    {
+        SetDeathHandler();
+    }
+
+    [ObserversRpc]
+    private void SetDeathHandler()
+    {
+        playerModel.tag = tag;
     }
 }
