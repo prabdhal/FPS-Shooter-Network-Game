@@ -8,10 +8,15 @@
  * Add Reload functionality 
  * Add Team colours and option to change teams via buttons
  * Add UI to show player is reloading
+ * Add friendly fire functionality so that same team members cannot damage eachother
  *
  *
  *
  * TO DO
+ * == Game
+ * Add death and respawn with screen turning grey and spawn timer countdown on screen 
+ * Show global chat where it shows who killed and died
+ * 
  * == Player HUD
  * Client players need to access other client player canvas's and set the canvas to LookAt client camera
  * Modify raycast get component portion to be more efficient
@@ -20,7 +25,6 @@
  * Add Pick up weapon functionality
  * Update automatic weapon click fire vs general fire rate (faster to click and fire...)
  * Add aim down sight for some weapons like ARs, Sniper rifles
- * Add friendly fire functionality so that same team members cannot damage eachother
  * Add weapon accuracy with random points around raycast as bullets, the further the range... the worse the accuracy (larger circle)
  * Ex.
  *   Vector2 spreadDirection = Random.insideUnitCircle.normalized; //Get a random direction for the spread

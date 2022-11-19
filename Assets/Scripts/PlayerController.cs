@@ -20,8 +20,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Other References")]
     public PlayerHUD playerHUD;
-
-
+    public PlayerTeamController playerTeam;
 
     [Header("Move Value")]
     public float walkingSpeed = 7.5f;
@@ -73,6 +72,7 @@ public class PlayerController : NetworkBehaviour
     private void Start()
     {
         characterController = GetComponentInChildren<CharacterController>();
+        playerTeam = GetComponent<PlayerTeamController>();
         currentHealth = maxHealth;
         playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
         playerHUD.UpdatePlayerHealth(currentHealth);
@@ -80,13 +80,11 @@ public class PlayerController : NetworkBehaviour
         {
             playerHUD.UpdateActiveWeapon(activeWeapon.Name);
             playerHUD.UpdateAmmo(activeWeapon.CurrentAmmo);
-            Debug.Log("UpdateAmmo: ");
         }
         else
         {
             playerHUD.UpdateActiveWeapon(defaultWeapon.Name);
             playerHUD.UpdateAmmo("N", "A");
-            Debug.Log("UpdateAmmo: ");
         }
 
         // Lock cursor
@@ -97,7 +95,6 @@ public class PlayerController : NetworkBehaviour
     private void Update()
     {
         if (vCam == null) return;
-
 
         if (currentHealth <= 0)
         {

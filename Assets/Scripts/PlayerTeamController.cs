@@ -1,4 +1,6 @@
 using FishNet.Object;
+using FishNet.Object.Synchronizing;
+using FishNet.Transporting;
 using UnityEngine;
 
 public class PlayerTeamController : NetworkBehaviour
@@ -8,6 +10,7 @@ public class PlayerTeamController : NetworkBehaviour
     private MeshRenderer playerMaterial;
 
     public TeamColor currentTeam = TeamColor.Neutral;
+    public string currentTeamName = "Neutral";
 
     [SerializeField]
     private Color teamRed = Color.red;
@@ -67,14 +70,15 @@ public class PlayerTeamController : NetworkBehaviour
     private void SelectTeam(Color color)
     {
         ChangeColor(color);
+        currentTeam = GetTeamColor(color);
     }
 
     [ObserversRpc]
     private void ChangeColor(Color color)
     {
         playerMaterial.material.color = color;
-        currentTeam = GetTeamColor(color);
-        playerHUD.UpdatePlayerTeamColor(currentTeam.ToString());
+        currentTeamName = GetTeamColor(color).ToString();
+        playerHUD.UpdatePlayerTeamColor(currentTeamName.ToString());
     }
 
     private TeamColor GetTeamColor(Color color)

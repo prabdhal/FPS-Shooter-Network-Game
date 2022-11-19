@@ -135,7 +135,7 @@ public class Weapon : NetworkBehaviour
         if (_fireRateTimer <= 0)
         {
             Debug.Log("Raycast/Bullet fired!");
-            ActivateRaycast(player.vCam);
+            ActivateRaycast(player);
             _fireRateTimer = _fireRate;
             
             // Update ammo ONLY if WeaponFireType is NOT Melee   
@@ -156,10 +156,10 @@ public class Weapon : NetworkBehaviour
     /// Fires weapon raycast to detect targets
     /// </summary>
     /// <param name="cam"></param>
-    private void ActivateRaycast(CinemachineVirtualCamera cam)
+    private void ActivateRaycast(PlayerController player)
     {
-        Vector3 origin = cam.transform.position;
-        Vector3 direction = cam.transform.forward;
+        Vector3 origin = player.vCam.transform.position;
+        Vector3 direction = player.vCam.transform.forward;
         RaycastHit hit;
         Debug.Log("Firing raycast!");
         if (Physics.Raycast(origin, direction, out hit, _range))
@@ -170,7 +170,8 @@ public class Weapon : NetworkBehaviour
             {
                 Debug.Log("Hit: " + hit.collider.name);
                 PlayerController target = hit.collider.gameObject.GetComponentInParent<PlayerController>();
-                ApplyDamage(target);
+                Debug.Log("target: " + target.name);
+                ApplyDamage(player, target);
             }
         }
     }
@@ -180,11 +181,18 @@ public class Weapon : NetworkBehaviour
     /// </summary>
     /// <param name="target"></param>
     [ServerRpc]
-    private void ApplyDamage(PlayerController target)
+    private void ApplyDamage(PlayerController player, PlayerController target)
     {
-        target.currentHealth -= _damage;
-        Debug.Log(-_damage + " points of damage applied to " + target.name);
+        Debug.Log("player team: " + player.playerTeam.currentTeam.Equals(target.playerTeam.currentTeam));
+        if (!target.playerTeam.currentTeam.Equals(player.playerTeam.currentTeam))
+        {
+            target.currentHealth -= _damage;
+            Debug.Log(-_damage + " points of damage applied to " + target.name);
+        }
+        else
+            Debug.Log("Cannot friendly fire!");
     }
+
     #endregion
 
     #region Reloading Logic
@@ -214,8 +222,6 @@ public class Weapon : NetworkBehaviour
     {
         if (_currentMagAmmo < _maxMagAmmoCapacity)
             InitiateReload(player);
-        else
-            Debug.Log("Full Mag Clip!");
 
         // reload after reload time
         if (_reloadSpeedTimer >= _reloadSpeed)
