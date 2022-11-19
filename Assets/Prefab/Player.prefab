@@ -832,6 +832,7 @@ GameObject:
   - component: {fileID: 8689619415655539846}
   - component: {fileID: 8689619415655539896}
   - component: {fileID: -3307198804290968615}
+  - component: {fileID: 1944602561687192679}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -914,6 +915,8 @@ MonoBehaviour:
   audioListener: {fileID: 1448977040234537121}
   playerModel: {fileID: 7699162290742982309}
   playerHUD: {fileID: 0}
+  playerTeam: {fileID: 0}
+  killedByPlayer: {fileID: 0}
   walkingSpeed: 7.5
   runningSpeed: 11.5
   jumpSpeed: 8
@@ -946,10 +949,26 @@ MonoBehaviour:
   _networkObjectCache: {fileID: 8689619415655539846}
   playerMaterial: {fileID: 351398393014969920}
   currentTeam: 0
+  currentTeamName: Neutral
   teamRed: {r: 1, g: 0, b: 0, a: 1}
   teamBlue: {r: 0, g: 0, b: 1, a: 1}
   teamYellow: {r: 1, g: 1, b: 0, a: 1}
   teamGreen: {r: 0, g: 1, b: 0, a: 1}
+--- !u!114 &1944602561687192679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8689619415655539902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _overrideType: 3
+  _updateHostVisibility: 1
+  _observerConditions: []
 --- !u!1 &8689619415717776111
 GameObject:
   m_ObjectHideFlags: 0

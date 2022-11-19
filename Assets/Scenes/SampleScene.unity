@@ -789,7 +789,6 @@ MonoBehaviour:
   _sceneNetworkObjects:
   - {fileID: 452913694}
   - {fileID: 995494881}
-  - {fileID: 0}
 --- !u!114 &452913695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1842,7 +1841,7 @@ MonoBehaviour:
   - {fileID: 995494880}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
-  - {fileID: 0}
+  - {fileID: 1939990910}
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
@@ -1854,7 +1853,6 @@ MonoBehaviour:
   _sceneNetworkObjects:
   - {fileID: 452913694}
   - {fileID: 995494881}
-  - {fileID: 0}
 --- !u!1 &1362379814
 GameObject:
   m_ObjectHideFlags: 0
@@ -2571,6 +2569,7 @@ GameObject:
   - component: {fileID: 1939990906}
   - component: {fileID: 1939990905}
   - component: {fileID: 1939990909}
+  - component: {fileID: 1939990910}
   m_Layer: 5
   m_Name: SceneFader
   m_TagString: Untagged
@@ -2669,6 +2668,34 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1939990910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939990904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <IsNested>k__BackingField: 1
+  <ComponentIndex>k__BackingField: 1
+  _networkBehaviours: []
+  <ParentNetworkObject>k__BackingField: {fileID: 995494881}
+  <ChildNetworkObjects>k__BackingField: []
+  _isNetworked: 1
+  _isGlobal: 0
+  _defaultDespawnType: 0
+  NetworkObserver: {fileID: 0}
+  <PrefabId>k__BackingField: -1
+  _scenePathHash: 584410112
+  <SceneId>k__BackingField: 2510022318821883876
+  <AssetPathHash>k__BackingField: 0
+  _sceneNetworkObjects:
+  - {fileID: 452913694}
+  - {fileID: 995494881}
 --- !u!1 &2022689201
 GameObject:
   m_ObjectHideFlags: 0

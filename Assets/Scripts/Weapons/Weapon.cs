@@ -126,11 +126,14 @@ public class Weapon : NetworkBehaviour
     private void FireRateHandler(PlayerController player)
     {
         // Checks if player has ammo
-        if (IsEmptyClip || IsEmptyWeapon || _isReloading)
+        if (IsEmptyClip || IsEmptyWeapon)
         {
             Debug.Log("Player needs to reload!");
             return;
         }
+
+        if (_isReloading)
+            CancelReload(player);
 
         if (_fireRateTimer <= 0)
         {
@@ -189,7 +192,10 @@ public class Weapon : NetworkBehaviour
             target.currentHealth -= _damage;
             if (target.currentHealth <= 0)
             {
-                player.playerHUD.UpdateGlobalMessagingWindow(player.name, target.name);
+                Debug.Log("target: " + target);
+                Debug.Log("Killed by: " + player);
+                target.killedByPlayer = player;
+                target.playerHUD.UpdateGlobalMessagingWindow(player.name.ToString(), target.name.ToString());
             }
             Debug.Log(-_damage + " points of damage applied to " + target.name);
         }
@@ -240,6 +246,13 @@ public class Weapon : NetworkBehaviour
             Debug.Log("Reloading");
             _reloadSpeedTimer += Time.deltaTime;
         }
+    }
+
+    public virtual void CancelReload(PlayerController player)
+    {
+        _reloadSpeedTimer = 0;
+        _isReloading = false;
+        player.playerHUD.DisableFeedbackText();
     }
 
     /// <summary>

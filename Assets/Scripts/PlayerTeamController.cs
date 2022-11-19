@@ -27,7 +27,6 @@ public class PlayerTeamController : NetworkBehaviour
         base.OnStartClient();
         if (base.IsOwner)
         {
-
         }
         else
         {
@@ -66,6 +65,7 @@ public class PlayerTeamController : NetworkBehaviour
         }
     }
 
+
     [ServerRpc]
     private void SelectTeam(Color color)
     {
@@ -93,5 +93,19 @@ public class PlayerTeamController : NetworkBehaviour
             return TeamColor.Green;
         else
             return TeamColor.Neutral;
+    }
+
+    private Color GetColorFromTeamColor(TeamColor team)
+    {
+        if (team.Equals(TeamColor.Red))
+            return Color.red;
+        else if (team.Equals(TeamColor.Blue))
+            return Color.blue;
+        else if (team.Equals(TeamColor.Yellow))
+            return Color.yellow;
+        else if (team.Equals(TeamColor.Green))
+            return Color.green;
+        else
+            return Color.white;
     }
 }

@@ -21,6 +21,7 @@ public class PlayerController : NetworkBehaviour
     [Header("Other References")]
     public PlayerHUD playerHUD;
     public PlayerTeamController playerTeam;
+    public PlayerController killedByPlayer;
 
     [Header("Move Value")]
     public float walkingSpeed = 7.5f;
@@ -35,7 +36,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Stats")]
     public float maxHealth = 100f;
-    [SyncVar(Channel = Channel.Unreliable, OnChange = nameof(UpdateHealthHUD))]
+    [SyncVar(Channel = Channel.Reliable, OnChange = nameof(UpdateHealthHUD))]
     public float currentHealth = 100f;
 
     [Header("Weapon")]
@@ -45,11 +46,12 @@ public class PlayerController : NetworkBehaviour
     public Weapon pistol;
     public Weapon submachine;
     public bool isFiring = false;
-    private float fireTimer = 0;
 
     private Vector3 moveDirection = Vector3.zero;
 
     [HideInInspector] public bool canMove = true;
+    public bool IsDead { get { return isDead; } }
+    private bool isDead = false;
 
 
     public override void OnStartClient()
@@ -94,13 +96,21 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            playerHUD.UpdateGlobalMessagingWindow("Prab", "Ab");
+        }
+        else if (Input.GetKeyDown(KeyCode.B))
+        {
+            playerHUD.UpdateGlobalMessagingWindow("Noor", "Navi");
+        }
         if (vCam == null) return;
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0 && isDead == false)
         {
             Death();
-            return;
         }
+        DeathHandler();
 
         bool isRunning = false;
 
@@ -183,18 +193,24 @@ public class PlayerController : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
+            if (activeWeapon != null)
+                activeWeapon.CancelReload(this);
             activeWeapon = null;
             playerHUD.UpdateActiveWeapon(defaultWeapon.Name);
             playerHUD.UpdateAmmo("N", "A");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
+            if (activeWeapon != null)
+                activeWeapon.CancelReload(this);
             activeWeapon = pistol.GetComponent<Weapon>();
             playerHUD.UpdateActiveWeapon(activeWeapon.Name);
             playerHUD.UpdateAmmo(activeWeapon.CurrentMagAmmo.ToString(), activeWeapon.CurrentAmmo.ToString());
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
+            if (activeWeapon != null)
+                activeWeapon.CancelReload(this);
             activeWeapon = submachine.GetComponent<Weapon>();
             playerHUD.UpdateActiveWeapon(activeWeapon.Name);
             playerHUD.UpdateAmmo(activeWeapon.CurrentMagAmmo.ToString(), activeWeapon.CurrentAmmo.ToString());
@@ -223,21 +239,15 @@ public class PlayerController : NetworkBehaviour
 
     private void Death()
     {
-        Debug.Log("Player " + " " + " is dead!");
-        playerModel.tag = "Untagged";
-        DeathHandler();
+        //Debug.Log("Player " + gameObject.name + " is dead!");
+        //Debug.Log("Killed By: " + killedByPlayer.name + "!");
+        //playerHUD.UpdateGlobalMessagingWindow(gameObject.name.ToString(), killedByPlayer.name.ToString());
+        isDead = true;
         playerHUD.sceneFader.gameObject.SetActive(true);
     }
 
-    [ServerRpc]
-    private void DeathHandler()
+    public void DeathHandler()
     {
-        SetDeathHandler();
-    }
-
-    [ObserversRpc]
-    private void SetDeathHandler()
-    {
-        playerModel.tag = tag;
+        Debug.Log("Death Handler");
     }
 }

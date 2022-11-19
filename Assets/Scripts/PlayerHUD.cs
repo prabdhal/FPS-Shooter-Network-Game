@@ -28,14 +28,6 @@ public class PlayerHUD : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            UpdateGlobalMessagingWindow("Prab", "Ab");
-        }
-        else if (Input.GetKeyDown(KeyCode.B))
-        {
-            UpdateGlobalMessagingWindow("Noor", "Navi");
-        }
     }
 
     public void UpdatePlayerTeamColor(string teamColor)
