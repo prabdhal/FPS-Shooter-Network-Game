@@ -6,6 +6,7 @@ TagManager:
   tags:
   - PlayerHUD
   - GlobalHUD
+  - PlayerCanvas
   layers:
   - Default
   - TransparentFX

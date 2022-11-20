@@ -2,6 +2,7 @@ using Cinemachine;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
+using TMPro;
 using UnityEngine;
 
 
@@ -22,7 +23,6 @@ public class PlayerController : NetworkBehaviour
     public PlayerHUD playerHUD;
     public GlobalHUD globalHUD;
     public PlayerTeamController playerTeam;
-    public PlayerController killedByPlayer;
 
     [Header("Move Value")]
     public float walkingSpeed = 7.5f;
@@ -60,11 +60,11 @@ public class PlayerController : NetworkBehaviour
         base.OnStartClient();
         if (base.IsOwner)
         {
-            gameObject.name = this.IsHost ? "Server" : "Client";
             vCam.enabled = true;
             brainCam.enabled = true;
             cam.enabled = true;
             audioListener.enabled = true;
+            gameObject.name = Random.Range(000, 999).ToString();
         }
         else
         {
@@ -98,20 +98,7 @@ public class PlayerController : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            globalHUD.UpdateGlobalMessagingWindow("Prab", "Ab");
-        }
-        else if (Input.GetKeyDown(KeyCode.B))
-        {
-            globalHUD.UpdateGlobalMessagingWindow("Noor", "Navi");
-        }
-        if (killedByPlayer != null)
-        {
-            Debug.Log("Killed by player: " + killedByPlayer);
-            globalHUD.UpdateGlobalMessagingWindow(killedByPlayer.name, "Navi");
-            killedByPlayer = null;
-        }
+        GlobalGameData.Instance.PrintKillLogs();
 
         if (vCam == null) return;
 
@@ -243,7 +230,8 @@ public class PlayerController : NetworkBehaviour
     
     private void UpdateHealthHUD(float prev, float next, bool asServer)
     {
-        playerHUD.UpdatePlayerHealth(next);
+        if (playerHUD != null)
+            playerHUD.UpdatePlayerHealth(next);
     }
 
     private void Death()

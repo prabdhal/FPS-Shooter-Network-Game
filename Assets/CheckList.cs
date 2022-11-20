@@ -19,7 +19,7 @@
  * TO DO
  * == Game
  * Add death and respawn with screen turning grey and spawn timer countdown on screen 
- * Show global chat where it shows who killed and died
+ * Show global chat where it shows who killed and died (has something to do with not recognizing ref from weapon script...)
  * 
  * == Player HUD
  * Client players need to access other client player canvas's and set the canvas to LookAt client camera

@@ -658,7 +658,6 @@ GameObject:
   - component: {fileID: 7286562090002949756}
   - component: {fileID: 1998064182643996417}
   - component: {fileID: 5045180921213059098}
-  - component: {fileID: 6266247515595596425}
   - component: {fileID: 7825773976655332210}
   m_Layer: 5
   m_Name: Canvas
@@ -762,22 +761,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _camera: {fileID: 8690637449572994934}
---- !u!114 &6266247515595596425
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6907006572620096740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12f743abe70421741a3f5673293fe74b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _componentIndexCache: 4
-  _addedNetworkObject: {fileID: 8689619415655539846}
-  _networkObjectCache: {fileID: 8689619415655539846}
-  _text: {fileID: 2678861652706481436}
 --- !u!114 &7825773976655332210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -876,7 +859,7 @@ MonoBehaviour:
   - {fileID: -3307198804290968615}
   - {fileID: 3954017404662110182}
   - {fileID: 8264763042294881147}
-  - {fileID: 6266247515595596425}
+  - {fileID: 0}
   - {fileID: 7825773976655332210}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField:
@@ -915,8 +898,11 @@ MonoBehaviour:
   audioListener: {fileID: 1448977040234537121}
   playerModel: {fileID: 7699162290742982309}
   playerHUD: {fileID: 0}
+  globalHUD: {fileID: 0}
   playerTeam: {fileID: 0}
   killedByPlayer: {fileID: 0}
+  killByPlayerName: 
+  _playerNameText: {fileID: 2678861652706481436}
   walkingSpeed: 7.5
   runningSpeed: 11.5
   jumpSpeed: 8

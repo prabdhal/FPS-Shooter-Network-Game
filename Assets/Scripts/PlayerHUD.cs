@@ -9,26 +9,20 @@ public class PlayerHUD : MonoBehaviour
     public Image crosshairImage;
 
     [Header("Texts")]
-    public TextMeshProUGUI _playerTeamColor;
+    public TextMeshProUGUI _playerTeamColorText;
     public TextMeshProUGUI _playerHealthText;
     public TextMeshProUGUI _activeWeaponText;
     public TextMeshProUGUI _ammoText;
     public TextMeshProUGUI _feedbackText;
-
-
 
     private void Start()
     {
         _feedbackText.gameObject.SetActive(false);
     }
 
-    private void Update()
-    {
-    }
-
     public void UpdatePlayerTeamColor(string teamColor)
     {
-        _playerTeamColor.text = "Team: " + teamColor;
+        _playerTeamColorText.text = "Team: " + teamColor;
     }
 
     public void UpdateActiveWeapon(string weaponName)

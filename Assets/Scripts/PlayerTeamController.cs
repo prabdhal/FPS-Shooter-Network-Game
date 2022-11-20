@@ -28,14 +28,18 @@ public class PlayerTeamController : NetworkBehaviour
         base.OnStartClient();
         if (base.IsOwner)
         {
-            playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
-            playerHUD.UpdatePlayerTeamColor(currentTeamName.ToString());
-            ApplyColorChange(GetColorFromTeamColor((TeamColor)currentTeam));
         }
         else
         {
             GetComponent<PlayerTeamController>().enabled = false;
         }
+    }
+
+    private void Start()
+    {
+        playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
+        playerHUD.UpdatePlayerTeamColor(currentTeamName.ToString());
+        ApplyColorChange(GetColorFromTeamColor((TeamColor)currentTeam));
     }
 
     private void Update()

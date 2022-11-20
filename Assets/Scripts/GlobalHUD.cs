@@ -23,19 +23,20 @@ public class GlobalHUD : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void UpdateGlobalMessagingWindow(string player, string target)
+    public void UpdateGlobalMessagingWindow()
     {
+        string recentLog = GlobalGameData.Instance.killLogs.Peek();
         GameObject go = Instantiate(_killTextPrefab.gameObject, _globalMessagingScrollView.transform);
         ServerManager.Spawn(go);
-        UpdateMessage(go, player, target);
+        UpdateMessage(go, recentLog);
 
     }
 
     [ObserversRpc]
-    public void UpdateMessage(GameObject go, string player, string target)
+    public void UpdateMessage(GameObject go, string log)
     {
         TextMeshProUGUI textPro = go.GetComponent<TextMeshProUGUI>();
         go.transform.SetParent(_globalMessagingScrollView.transform, false);
-        textPro.text = player + " killed " + target;
+        textPro.text = log;
     }
 }

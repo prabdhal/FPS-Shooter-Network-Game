@@ -192,15 +192,22 @@ public class Weapon : NetworkBehaviour
             target.currentHealth -= _damage;
             if (target.currentHealth <= 0)
             {
-                Debug.Log("target: " + target);
-                Debug.Log("Killed by: " + player);
-                target.killedByPlayer = player;
-                //target.playerHUD.UpdateGlobalMessagingWindow(player.name.ToString(), target.name.ToString());
+                string log = target.name + " killed by " + player.name;
+                GlobalGameData.Instance.AddKillLog(log);
+                UpdateKillLog(player, target);
+                player.globalHUD.UpdateGlobalMessagingWindow();
             }
             Debug.Log(-_damage + " points of damage applied to " + target.name);
         }
         else
             Debug.Log("Cannot friendly fire!");
+    }
+
+    [ObserversRpc]
+    private void UpdateKillLog(PlayerController player, PlayerController target)
+    {
+        string log = target.name + " killed by " + player.name;
+        GlobalGameData.Instance.AddKillLog(log);
     }
 
     #endregion
