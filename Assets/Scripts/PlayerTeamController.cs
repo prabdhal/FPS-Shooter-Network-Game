@@ -1,15 +1,16 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
-using FishNet.Transporting;
 using UnityEngine;
 
 public class PlayerTeamController : NetworkBehaviour
 {
     private PlayerHUD playerHUD;
     [SerializeField]
-    private MeshRenderer playerMaterial;
+    private MeshRenderer meshRenderer;
 
-    public TeamColor currentTeam = TeamColor.Neutral;
+    [SyncVar(OnChange = nameof(OnChangeColor))]
+    public int currentTeam = (int)TeamColor.Neutral;
+
     public string currentTeamName = "Neutral";
 
     [SerializeField]
@@ -27,58 +28,46 @@ public class PlayerTeamController : NetworkBehaviour
         base.OnStartClient();
         if (base.IsOwner)
         {
+            playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
+            playerHUD.UpdatePlayerTeamColor(currentTeamName.ToString());
+            ApplyColorChange(GetColorFromTeamColor((TeamColor)currentTeam));
         }
         else
         {
-            gameObject.GetComponent<PlayerTeamController>().enabled = false;
+            GetComponent<PlayerTeamController>().enabled = false;
         }
-    }
-
-    private void Start()
-    {
-        playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
-        playerHUD.UpdatePlayerTeamColor(currentTeam.ToString());
     }
 
     private void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.Alpha7))
-        {
             SelectTeam(teamRed);
-            Debug.Log(gameObject.name + " joined Team Red");
-        }
         else if (Input.GetKeyDown(KeyCode.Alpha8))
-        {
             SelectTeam(teamBlue);
-            Debug.Log(gameObject.name + " joined Team Blue");
-        }
         else if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
             SelectTeam(teamYellow);
-            Debug.Log(gameObject.name + " joined Team Yellow");
-        }
         else if (Input.GetKeyDown(KeyCode.Alpha0))
-        {
             SelectTeam(teamGreen);
-            Debug.Log(gameObject.name + " joined Team Green");
-        }
     }
-
 
     [ServerRpc]
     private void SelectTeam(Color color)
     {
-        ChangeColor(color);
-        currentTeam = GetTeamColor(color);
+        currentTeam = (int)GetTeamColor(color);
     }
 
-    [ObserversRpc]
-    private void ChangeColor(Color color)
+    private void OnChangeColor(int prev, int next, bool isServer)
     {
-        playerMaterial.material.color = color;
+        Color color = GetColorFromTeamColor((TeamColor)next); 
+        ApplyColorChange(color);
+    }
+
+    private void ApplyColorChange(Color color)
+    {
+        meshRenderer.material.color = color;
         currentTeamName = GetTeamColor(color).ToString();
-        playerHUD.UpdatePlayerTeamColor(currentTeamName.ToString());
+        if (playerHUD != null)
+            playerHUD.UpdatePlayerTeamColor(currentTeamName.ToString());
     }
 
     private TeamColor GetTeamColor(Color color)

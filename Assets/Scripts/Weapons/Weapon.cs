@@ -195,7 +195,7 @@ public class Weapon : NetworkBehaviour
                 Debug.Log("target: " + target);
                 Debug.Log("Killed by: " + player);
                 target.killedByPlayer = player;
-                target.playerHUD.UpdateGlobalMessagingWindow(player.name.ToString(), target.name.ToString());
+                //target.playerHUD.UpdateGlobalMessagingWindow(player.name.ToString(), target.name.ToString());
             }
             Debug.Log(-_damage + " points of damage applied to " + target.name);
         }

@@ -20,6 +20,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Other References")]
     public PlayerHUD playerHUD;
+    public GlobalHUD globalHUD;
     public PlayerTeamController playerTeam;
     public PlayerController killedByPlayer;
 
@@ -77,6 +78,7 @@ public class PlayerController : NetworkBehaviour
         playerTeam = GetComponent<PlayerTeamController>();
         currentHealth = maxHealth;
         playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
+        globalHUD = GameObject.FindGameObjectWithTag("GlobalHUD").GetComponent<GlobalHUD>();
         playerHUD.UpdatePlayerHealth(currentHealth);
         if (activeWeapon != null)
         {
@@ -98,12 +100,19 @@ public class PlayerController : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.V))
         {
-            playerHUD.UpdateGlobalMessagingWindow("Prab", "Ab");
+            globalHUD.UpdateGlobalMessagingWindow("Prab", "Ab");
         }
         else if (Input.GetKeyDown(KeyCode.B))
         {
-            playerHUD.UpdateGlobalMessagingWindow("Noor", "Navi");
+            globalHUD.UpdateGlobalMessagingWindow("Noor", "Navi");
         }
+        if (killedByPlayer != null)
+        {
+            Debug.Log("Killed by player: " + killedByPlayer);
+            globalHUD.UpdateGlobalMessagingWindow(killedByPlayer.name, "Navi");
+            killedByPlayer = null;
+        }
+
         if (vCam == null) return;
 
         if (currentHealth <= 0 && isDead == false)

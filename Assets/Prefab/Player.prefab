@@ -947,12 +947,12 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 8689619415655539846}
   _networkObjectCache: {fileID: 8689619415655539846}
-  playerMaterial: {fileID: 351398393014969920}
+  meshRenderer: {fileID: 351398393014969920}
   currentTeam: 0
   currentTeamName: Neutral
   teamRed: {r: 1, g: 0, b: 0, a: 1}
   teamBlue: {r: 0, g: 0, b: 1, a: 1}
-  teamYellow: {r: 1, g: 1, b: 0, a: 1}
+  teamYellow: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   teamGreen: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &1944602561687192679
 MonoBehaviour:
