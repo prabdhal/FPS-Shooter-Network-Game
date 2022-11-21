@@ -195,7 +195,6 @@ public class Weapon : NetworkBehaviour
                 string log = target.name + " killed by " + player.name;
                 GlobalGameData.Instance.AddKillLog(log);
                 UpdateKillLog(player, target);
-                player.globalHUD.UpdateGlobalMessagingWindow();
             }
             Debug.Log(-_damage + " points of damage applied to " + target.name);
         }
@@ -208,6 +207,8 @@ public class Weapon : NetworkBehaviour
     {
         string log = target.name + " killed by " + player.name;
         GlobalGameData.Instance.AddKillLog(log);
+        player.globalHUD.UpdateGlobalMessagingWindow();
+        target.playerModel.tag = "Untagged";
     }
 
     #endregion

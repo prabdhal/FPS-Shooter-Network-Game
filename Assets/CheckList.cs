@@ -9,6 +9,7 @@
  * Add Team colours and option to change teams via buttons
  * Add UI to show player is reloading
  * Add friendly fire functionality so that same team members cannot damage eachother
+ * Show global chat where it shows who killed and died (has something to do with not recognizing ref from weapon script...)
  * 
  * BUG FIXES
  * When client joins... they don't see the color changes applied (WAS GETTING NULL OBJECT REF TO PLAYERHUD... BLOCKED OTHER CODE) 
@@ -19,7 +20,6 @@
  * TO DO
  * == Game
  * Add death and respawn with screen turning grey and spawn timer countdown on screen 
- * Show global chat where it shows who killed and died (has something to do with not recognizing ref from weapon script...)
  * 
  * == Player HUD
  * Client players need to access other client player canvas's and set the canvas to LookAt client camera

@@ -16,8 +16,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Player Component References")]
     private CharacterController characterController;
-    [SerializeField]
-    private Transform playerModel;
+    public Transform playerModel;
 
     [Header("Other References")]
     public PlayerHUD playerHUD;
