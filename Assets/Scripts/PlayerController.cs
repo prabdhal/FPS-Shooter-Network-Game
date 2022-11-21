@@ -2,7 +2,6 @@ using Cinemachine;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using FishNet.Transporting;
-using TMPro;
 using UnityEngine;
 
 
@@ -22,6 +21,9 @@ public class PlayerController : NetworkBehaviour
     public PlayerHUD playerHUD;
     public GlobalHUD globalHUD;
     public PlayerTeamController playerTeam;
+
+    [SyncVar(OnChange = nameof(OnChangeName))]
+    public string playerName;   
 
     [Header("Move Value")]
     public float walkingSpeed = 7.5f;
@@ -50,6 +52,13 @@ public class PlayerController : NetworkBehaviour
     private Vector3 moveDirection = Vector3.zero;
 
     [HideInInspector] public bool canMove = true;
+
+    [Header("Death")]
+    [SerializeField]
+    private Transform[] spawnPoints = new Transform[3];
+    [SerializeField]
+    private float spawnTimer = 5f;
+    private float curSpawnTimer = 0;
     public bool IsDead { get { return isDead; } }
     private bool isDead = false;
 
@@ -63,7 +72,12 @@ public class PlayerController : NetworkBehaviour
             brainCam.enabled = true;
             cam.enabled = true;
             audioListener.enabled = true;
-            gameObject.name = Random.Range(000, 999).ToString();
+            GameObject[] spawns = GameObject.FindGameObjectsWithTag("SpawnPoint");
+            spawnPoints = new Transform[spawns.Length];
+            for (int i = 0; i < spawns.Length; i++)
+            {
+                spawnPoints[i] = spawns[i].transform;
+            }
         }
         else
         {
@@ -71,14 +85,17 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+
     private void Start()
     {
         characterController = GetComponentInChildren<CharacterController>();
         playerTeam = GetComponent<PlayerTeamController>();
-        currentHealth = maxHealth;
         playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
         globalHUD = GameObject.FindGameObjectWithTag("GlobalHUD").GetComponent<GlobalHUD>();
+        currentHealth = maxHealth;
         playerHUD.UpdatePlayerHealth(currentHealth);
+        ApplyNameChange();
+
         if (activeWeapon != null)
         {
             playerHUD.UpdateActiveWeapon(activeWeapon.Name);
@@ -103,7 +120,9 @@ public class PlayerController : NetworkBehaviour
 
         if (currentHealth <= 0 && isDead == false)
         {
-            Death();
+            curSpawnTimer = 0f;
+            isDead = true;
+            DeathServer();
         }
         DeathHandler();
 
@@ -130,6 +149,19 @@ public class PlayerController : NetworkBehaviour
         FireWeaponHandler();
         WeaponSwapHandler();
     }
+
+
+    private void OnChangeName(string prev, string next, bool isServer)
+    {
+        gameObject.name = playerName;
+    }
+
+    private void ApplyNameChange()
+    {
+        playerName = Random.Range(000, 999).ToString();
+    }
+
+    #region Player Movement Handlers
 
     /// <summary>
     /// Rotate player to look direction
@@ -161,6 +193,10 @@ public class PlayerController : NetworkBehaviour
             moveDirection.y -= gravity * Time.deltaTime;
         }
     }
+
+    #endregion
+
+    #region Player Weapon Handlers
 
     /// <summary>
     /// Checks for active weapon to fire, otherwise player will use melee attack only
@@ -212,6 +248,8 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    #endregion
+
     //[ServerRpc]
     //private void InstantiateProjectile()
     //{
@@ -226,24 +264,69 @@ public class PlayerController : NetworkBehaviour
         Projectile proj = go.GetComponent<Projectile>();
         proj.Init(this, 25f, 2f);
     }
-    
+
     private void UpdateHealthHUD(float prev, float next, bool asServer)
     {
         if (playerHUD != null)
             playerHUD.UpdatePlayerHealth(next);
     }
 
-    private void Death()
+    [ServerRpc]
+    private void DeathServer()
     {
         //Debug.Log("Player " + gameObject.name + " is dead!");
         //Debug.Log("Killed By: " + killedByPlayer.name + "!");
         //playerHUD.UpdateGlobalMessagingWindow(gameObject.name.ToString(), killedByPlayer.name.ToString());
-        isDead = true;
-        playerHUD.sceneFader.gameObject.SetActive(true);
+        Death();
+        //playerHUD.sceneFader.gameObject.SetActive(true);
+    }
+
+    [ObserversRpc]
+    private void Death()
+    {
+        playerModel.gameObject.SetActive(false);
+        playerModel.tag = "Untagged";
     }
 
     public void DeathHandler()
     {
+        if (isDead == false) return;
+
         Debug.Log("Death Handler");
+        if (curSpawnTimer >= spawnTimer)
+        {
+            curSpawnTimer = 0f;
+            ResetP();
+        }
+        else
+            curSpawnTimer += Time.deltaTime;
+    }
+    
+    private void ResetP()
+    {
+        playerHUD.UpdatePlayerHealth(currentHealth);
+        playerHUD.UpdateActiveWeapon(defaultWeapon.Name);
+        playerHUD.UpdateAmmo("N", "A");
+        pistol.ResetWeapon();
+        submachine.ResetWeapon();
+        isDead = false;
+        ResetPlayerServer();
+        //// spawn player at a random spawn point
+        //int spawnIdx = Random.Range(0, spawnPoints.Length - 1);
+        //transform.position = spawnPoints[spawnIdx].position;
+    }
+
+    [ServerRpc]
+    private void ResetPlayerServer()
+    {
+        currentHealth = maxHealth;
+        ResetPlayer();
+    }
+
+    [ObserversRpc]
+    private void ResetPlayer()
+    {
+        playerModel.gameObject.SetActive(true);
+        playerModel.tag = "Player";
     }
 }

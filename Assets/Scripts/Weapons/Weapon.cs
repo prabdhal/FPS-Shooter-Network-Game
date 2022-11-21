@@ -1,4 +1,3 @@
-using Cinemachine;
 using FishNet.Object;
 using UnityEngine;
 
@@ -44,7 +43,7 @@ public class Weapon : NetworkBehaviour
     public int CurrentMagAmmo { get { return _currentMagAmmo; } }
 
     // useful props
-    public bool IsEmptyClip { get { return _currentMagAmmo <= 0 && !FireType.Equals(WeaponFireType.Melee); } }    
+    public bool IsEmptyClip { get { return _currentMagAmmo <= 0 && !FireType.Equals(WeaponFireType.Melee); } }
     public bool IsEmptyWeapon { get { return _currentAmmo <= 0 && _currentMagAmmo <= 0 && !FireType.Equals(WeaponFireType.Melee); } }
     protected bool _isReloading = false;
     public bool IsReloading { get { return _isReloading; } }
@@ -67,6 +66,10 @@ public class Weapon : NetworkBehaviour
         _currentMagAmmo = _maxMagAmmoCapacity;
     }
 
+    /// <summary>
+    /// Consists of all the methods which are required to run in Update
+    /// </summary>
+    /// <param name="player"></param>
     public void WeaponUpdate(PlayerController player)
     {
         FireWeapon(player);
@@ -140,7 +143,7 @@ public class Weapon : NetworkBehaviour
             Debug.Log("Raycast/Bullet fired!");
             ActivateRaycast(player);
             _fireRateTimer = _fireRate;
-            
+
             // Update ammo ONLY if WeaponFireType is NOT Melee   
             if (!FireType.Equals(WeaponFireType.Melee))
             {
@@ -186,7 +189,6 @@ public class Weapon : NetworkBehaviour
     [ServerRpc]
     private void ApplyDamage(PlayerController player, PlayerController target)
     {
-        Debug.Log("player team: " + player.playerTeam.currentTeam.Equals(target.playerTeam.currentTeam));
         if (!target.playerTeam.currentTeam.Equals(player.playerTeam.currentTeam))
         {
             target.currentHealth -= _damage;
@@ -205,10 +207,8 @@ public class Weapon : NetworkBehaviour
     [ObserversRpc]
     private void UpdateKillLog(PlayerController player, PlayerController target)
     {
-        string log = target.name + " killed by " + player.name;
-        GlobalGameData.Instance.AddKillLog(log);
-        player.globalHUD.UpdateGlobalMessagingWindow();
-        target.playerModel.tag = "Untagged";
+        if (target.globalHUD != null)
+            target.globalHUD.UpdateGlobalMessagingWindow();
     }
 
     #endregion
@@ -271,14 +271,23 @@ public class Weapon : NetworkBehaviour
         int ammoNeeded = _maxMagAmmoCapacity - _currentMagAmmo;
         if (ammoNeeded > _currentAmmo)
             ammoNeeded = _currentAmmo;
-        
+
         _currentMagAmmo += ammoNeeded;
-        
+
         _currentAmmo -= ammoNeeded;
-        if (_currentAmmo <= 0) 
+        if (_currentAmmo <= 0)
             _currentAmmo = 0;
 
         player.playerHUD.UpdateAmmo(_currentMagAmmo.ToString(), _currentAmmo.ToString());
     }
-    #endregion 
+    #endregion
+
+    /// <summary>
+    /// Resets weapon values to its original values
+    /// </summary>
+    public void ResetWeapon()
+    {
+        _currentAmmo = _startingAmmo;
+        _currentMagAmmo = _maxMagAmmoCapacity;
+    }
 }

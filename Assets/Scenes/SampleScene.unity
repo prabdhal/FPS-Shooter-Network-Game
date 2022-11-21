@@ -960,7 +960,7 @@ GameObject:
   - component: {fileID: 725290107}
   m_Layer: 0
   m_Name: Spawn Point (3)
-  m_TagString: Untagged
+  m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1545,7 +1545,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b182c4e2fbe85444da4904ec95e31989, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
   sceneFader: {fileID: 1939990905}
   crosshairImage: {fileID: 471690708}
   _playerTeamColorText: {fileID: 766724922}
@@ -1882,7 +1881,7 @@ GameObject:
   - component: {fileID: 1465598068}
   m_Layer: 0
   m_Name: Spawn Point (1)
-  m_TagString: Untagged
+  m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2006,7 +2005,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1531723690}
   m_Layer: 0
-  m_Name: SpawnPositions
+  m_Name: SpawnPoints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2078,7 +2077,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1566674081}
   _networkObjectCache: {fileID: 1566674081}
-  killLogs: []
 --- !u!114 &1566674081
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2248,7 +2246,7 @@ GameObject:
   - component: {fileID: 1803521143}
   m_Layer: 0
   m_Name: Spawn Point (2)
-  m_TagString: Untagged
+  m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

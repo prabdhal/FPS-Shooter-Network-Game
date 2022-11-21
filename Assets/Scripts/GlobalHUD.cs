@@ -14,7 +14,6 @@ public class GlobalHUD : NetworkBehaviour
         base.OnStartClient();
         if (IsOwner)
         {
-
         }
         else
         {
@@ -29,7 +28,6 @@ public class GlobalHUD : NetworkBehaviour
         GameObject go = Instantiate(_killTextPrefab.gameObject, _globalMessagingScrollView.transform);
         ServerManager.Spawn(go);
         UpdateMessage(go, recentLog);
-
     }
 
     [ObserversRpc]
