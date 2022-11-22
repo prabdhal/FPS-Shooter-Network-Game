@@ -10,21 +10,21 @@
  * Add UI to show player is reloading
  * Add friendly fire functionality so that same team members cannot damage eachother
  * Show global chat where it shows who killed and died (has something to do with not recognizing ref from weapon script...)
- * player name isnt reflected across clients
  * 
  * BUG FIXES
  * When client joins... they don't see the color changes applied (WAS GETTING NULL OBJECT REF TO PLAYERHUD... BLOCKED OTHER CODE) 
- * When killing client, global kill logs are double instantiated (ran display global messages only on target) seems like both the player and target ran script.. will check on this more for understanding
  * 
  * 
  *
  *
  * TO DO
  * BUGS
+ * When killing client, global kill logs are double instantiated
  * 
  * == Game
  * Add death and respawn with screen turning grey and spawn timer countdown on screen (hide player, apply reset, teleport to another spawn point)
  * When client joins they don't see the global chat list
+ * player name isnt reflected across clients
  * 
  * 
  * == Player HUD
