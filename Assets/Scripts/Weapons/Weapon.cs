@@ -6,6 +6,8 @@ public class Weapon : NetworkBehaviour
     // weapon values
     [Header("Weapon Values")]
     [SerializeField]
+    protected GameObject prefab;
+    [SerializeField]
     protected string _name = "Default Weapon";
     public string Name { get { return _name; } }
     [SerializeField]
@@ -14,6 +16,9 @@ public class Weapon : NetworkBehaviour
     [SerializeField]
     protected float _range = 15f;
     public float Range { get { return _range; } }
+    [SerializeField]
+    protected float _accuracy = 0.2f;
+    public float Accuracy { get { return _accuracy; } }
     [SerializeField]
     protected float _fireRate = 1f;
     public float FireRate { get { return _fireRate; } }
@@ -74,6 +79,12 @@ public class Weapon : NetworkBehaviour
     {
         FireWeapon(player);
         ReloadHander(player);
+
+        Vector3 origin = player.vCam.transform.position;
+        Vector3 direction = player.vCam.transform.forward;
+        Vector3 spreadDistance = player.vCam.transform.forward + new Vector3(Random.insideUnitCircle.normalized.x * _accuracy, Random.insideUnitCircle.normalized.y * _accuracy, 0f);
+
+        Debug.DrawRay(origin, spreadDistance * _range, Color.red);
     }
 
 
@@ -165,16 +176,14 @@ public class Weapon : NetworkBehaviour
     private void ActivateRaycast(PlayerController player)
     {
         Vector3 origin = player.vCam.transform.position;
-        Vector3 direction = player.vCam.transform.forward;
+        Vector3 spreadDistance = (player.vCam.transform.forward + new Vector3(Random.insideUnitCircle.normalized.x * _accuracy, Random.insideUnitCircle.normalized.y * _accuracy, 0f)) * _range;
         RaycastHit hit;
-        Debug.Log("Firing raycast!");
-        if (Physics.Raycast(origin, direction, out hit, _range))
+
+        if (Physics.Raycast(origin, spreadDistance, out hit, _range))
         {
-            Debug.Log("Hit Player");
-            Debug.DrawRay(origin, direction * _range, Color.red);
+            //Debug.DrawRay(origin, spreadDistance, Color.red);
             if (hit.collider.tag.Equals("Player"))
             {
-                Debug.Log("Hit: " + hit.collider.name);
                 PlayerController target = hit.collider.gameObject.GetComponentInParent<PlayerController>();
                 Debug.Log("target: " + target.name);
                 ApplyDamage(player, target);
