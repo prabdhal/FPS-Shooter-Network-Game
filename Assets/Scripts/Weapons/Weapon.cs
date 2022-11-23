@@ -182,7 +182,7 @@ public class Weapon : NetworkBehaviour
         if (Physics.Raycast(origin, spreadDistance, out hit, _range))
         {
             //Debug.DrawRay(origin, spreadDistance, Color.red);
-            if (hit.collider.tag.Equals("Player"))
+            if (hit.collider.tag.Equals(StringData.PlayerTag))
             {
                 PlayerController target = hit.collider.gameObject.GetComponentInParent<PlayerController>();
                 Debug.Log("target: " + target.name);

@@ -1,12 +1,13 @@
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
+using TMPro;
 using UnityEngine;
 
 public class PlayerTeamController : NetworkBehaviour
 {
     private PlayerHUD playerHUD;
     [SerializeField]
-    private MeshRenderer meshRenderer;
+    private TextMeshPro nameText;
 
     [SyncVar(OnChange = nameof(OnChangeColor))]
     public int currentTeam = (int)TeamColor.Neutral;
@@ -37,7 +38,7 @@ public class PlayerTeamController : NetworkBehaviour
 
     private void Start()
     {
-        playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
+        playerHUD = GameObject.FindGameObjectWithTag(StringData.PlayerHUDTag).GetComponent<PlayerHUD>();
         playerHUD.UpdatePlayerTeamColor(currentTeamName.ToString());
         ApplyColorChange(GetColorFromTeamColor((TeamColor)currentTeam));
     }
@@ -60,15 +61,20 @@ public class PlayerTeamController : NetworkBehaviour
         currentTeam = (int)GetTeamColor(color);
     }
 
+    public void UpdateName(string name)
+    {
+        nameText.text = name;
+    }
+
     private void OnChangeColor(int prev, int next, bool isServer)
     {
-        Color color = GetColorFromTeamColor((TeamColor)next); 
+        Color color = GetColorFromTeamColor((TeamColor)next);
         ApplyColorChange(color);
     }
 
     private void ApplyColorChange(Color color)
     {
-        meshRenderer.material.color = color;
+        nameText.color = color;
         currentTeamName = GetTeamColor(color).ToString();
         if (playerHUD != null)
             playerHUD.UpdatePlayerTeamColor(currentTeamName.ToString());

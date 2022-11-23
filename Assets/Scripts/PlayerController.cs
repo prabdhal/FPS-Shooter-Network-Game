@@ -15,6 +15,7 @@ public class PlayerController : NetworkBehaviour
 
     [Header("Player Component References")]
     private CharacterController characterController;
+    private Animator anim;
     public Transform playerModel;
 
     [Header("Other References")]
@@ -90,8 +91,8 @@ public class PlayerController : NetworkBehaviour
     {
         characterController = GetComponentInChildren<CharacterController>();
         playerTeam = GetComponent<PlayerTeamController>();
-        playerHUD = GameObject.FindGameObjectWithTag("PlayerHUD").GetComponent<PlayerHUD>();
-        globalHUD = GameObject.FindGameObjectWithTag("GlobalHUD").GetComponent<GlobalHUD>();
+        playerHUD = GameObject.FindGameObjectWithTag(StringData.PlayerHUDTag).GetComponent<PlayerHUD>();
+        globalHUD = GameObject.FindGameObjectWithTag(StringData.GlobalHUDTag).GetComponent<GlobalHUD>();
         currentHealth = maxHealth;
         playerHUD.UpdatePlayerHealth(currentHealth);
         ApplyNameChange();
@@ -154,6 +155,7 @@ public class PlayerController : NetworkBehaviour
     private void OnChangeName(string prev, string next, bool isServer)
     {
         gameObject.name = playerName;
+        playerTeam.UpdateName(playerName);
     }
 
     private void ApplyNameChange()
@@ -285,7 +287,7 @@ public class PlayerController : NetworkBehaviour
     private void Death()
     {
         playerModel.gameObject.SetActive(false);
-        playerModel.tag = "Untagged";
+        playerModel.tag = StringData.UntaggedTag;
     }
 
     public void DeathHandler()
@@ -327,6 +329,6 @@ public class PlayerController : NetworkBehaviour
     private void ResetPlayer()
     {
         playerModel.gameObject.SetActive(true);
-        playerModel.tag = "Player";
+        playerModel.tag = StringData.PlayerTag;
     }
 }
