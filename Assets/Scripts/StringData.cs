@@ -8,5 +8,9 @@ public static class StringData
     public static string SpawnPointTag = "SpawnPoint";
 
     // animations
+    public static string Speed = "speed";
+    public static string SpeedX = "speedX";
+    public static string SpeedY = "speedY";
+    public static string IsRunning = "isRunning";
 
 }

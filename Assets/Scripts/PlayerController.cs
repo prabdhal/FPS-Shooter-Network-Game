@@ -24,13 +24,23 @@ public class PlayerController : NetworkBehaviour
     public PlayerTeamController playerTeam;
 
     [SyncVar(OnChange = nameof(OnChangeName))]
-    public string playerName;   
+    public string playerName;
 
     [Header("Move Value")]
-    public float walkingSpeed = 7.5f;
-    public float runningSpeed = 11.5f;
-    public float jumpSpeed = 8.0f;
-    public float gravity = 20.0f;
+    [SerializeField]
+    private float walkingSpeed = 7.5f;
+    [SerializeField]
+    private float runningSpeed = 11.5f;
+    [SerializeField]
+    private float jumpSpeed = 8.0f;
+    [SerializeField]
+    private float gravity = 20.0f;
+    [SerializeField]
+    private float xInput;
+    [SerializeField]
+    private float yInput;
+    private bool isRunning = false;
+    public bool IsRunning { get { return isRunning; } }
 
     [Header("Look Values")]
     public float lookSpeed = 2.0f;
@@ -90,6 +100,7 @@ public class PlayerController : NetworkBehaviour
     private void Start()
     {
         characterController = GetComponentInChildren<CharacterController>();
+        anim = GetComponentInChildren<Animator>();
         playerTeam = GetComponent<PlayerTeamController>();
         playerHUD = GameObject.FindGameObjectWithTag(StringData.PlayerHUDTag).GetComponent<PlayerHUD>();
         globalHUD = GameObject.FindGameObjectWithTag(StringData.GlobalHUDTag).GetComponent<GlobalHUD>();
@@ -127,22 +138,26 @@ public class PlayerController : NetworkBehaviour
         }
         DeathHandler();
 
-        bool isRunning = false;
-
-        // Press Left Shift to run
-        isRunning = Input.GetKey(KeyCode.LeftShift);
+        isRunning = false;
 
         // We are grounded, so recalculate move direction based on axis
         Vector3 forward = vCam.transform.TransformDirection(Vector3.forward);
         Vector3 right = vCam.transform.TransformDirection(Vector3.right);
 
-        float curSpeedX = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Vertical") : 0;
-        float curSpeedY = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Horizontal") : 0;
+        xInput = Input.GetAxisRaw("Horizontal");
+        yInput = Input.GetAxisRaw("Vertical");
+
+        float curSpeedX = canMove ? (isRunning ? runningSpeed : walkingSpeed) * xInput : 0;
+        float curSpeedY = canMove ? (isRunning ? runningSpeed : walkingSpeed) * yInput : 0;
         float movementDirectionY = moveDirection.y;
-        moveDirection = (forward * curSpeedX) + (right * curSpeedY);
+        moveDirection = (forward * curSpeedY) + (right * curSpeedX);
+
+        // Press Left Shift to run
+        isRunning = Input.GetKey(KeyCode.LeftShift) && moveDirection.normalized.magnitude > 0f;
 
         RotationHandler();
         JumpHandler(movementDirectionY);
+        AnimatorHandler();
 
         // Move the controller
         characterController.Move(moveDirection * Time.deltaTime);
@@ -162,6 +177,18 @@ public class PlayerController : NetworkBehaviour
     {
         playerName = Random.Range(000, 999).ToString();
     }
+
+    #region Player Animation Handler
+    private void AnimatorHandler()
+    {
+        float moveDir = new Vector3(moveDirection.x, 0f, moveDirection.z).magnitude;
+        anim.SetFloat(StringData.Speed, moveDir);
+        anim.SetFloat(StringData.SpeedX, xInput);
+        anim.SetFloat(StringData.SpeedY, yInput);
+        anim.SetBool(StringData.IsRunning, IsRunning);
+    }
+
+    #endregion
 
     #region Player Movement Handlers
 
@@ -273,6 +300,8 @@ public class PlayerController : NetworkBehaviour
             playerHUD.UpdatePlayerHealth(next);
     }
 
+    #region Death Handler
+
     [ServerRpc]
     private void DeathServer()
     {
@@ -303,7 +332,7 @@ public class PlayerController : NetworkBehaviour
         else
             curSpawnTimer += Time.deltaTime;
     }
-    
+
     private void ResetP()
     {
         playerHUD.UpdatePlayerHealth(currentHealth);
@@ -331,4 +360,5 @@ public class PlayerController : NetworkBehaviour
         playerModel.gameObject.SetActive(true);
         playerModel.tag = StringData.PlayerTag;
     }
+    #endregion
 }
