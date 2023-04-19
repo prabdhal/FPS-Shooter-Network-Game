@@ -78,6 +78,7 @@ namespace FishNet.Managing.Object
                     Debug.LogError($"AssetPathHash is not set for GameObject {n.name}.");
                     
                 }
+                //Debug.Log(n.AssetPathHash.ToString());
                 hashcodesAndNobs.Add(n.AssetPathHash, n);
             }
             //An error occured, no reason to continue.
