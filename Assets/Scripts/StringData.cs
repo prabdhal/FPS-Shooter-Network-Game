@@ -11,6 +11,11 @@ public static class StringData
     public static string Speed = "speed";
     public static string SpeedX = "speedX";
     public static string SpeedY = "speedY";
+    public static string Jump = "Jump";
+    public static string Fire = "Fire";
+    public static string Reload = "Reload";
     public static string IsRunning = "isRunning";
+    public static string IsFiring = "isFiring";
+    public static string IsReloading = "isReloading";
 
 }

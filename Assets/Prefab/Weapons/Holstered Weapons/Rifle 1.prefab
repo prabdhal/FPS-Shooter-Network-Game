@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5613694650824037430
+--- !u!1 &258211464035934933
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,50 +8,50 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5613694650824037436}
-  - component: {fileID: 5613694650824037427}
-  - component: {fileID: 5613694650824037426}
-  - component: {fileID: 5613694650824037425}
-  - component: {fileID: 5613694650824037424}
-  - component: {fileID: 5613694650824037431}
+  - component: {fileID: 639099215774742639}
+  - component: {fileID: 4571526135073273802}
+  - component: {fileID: 1771504020840776448}
+  - component: {fileID: 8609078102831907424}
+  - component: {fileID: 1683500156825780498}
+  - component: {fileID: 6735077600778315481}
   m_Layer: 0
-  m_Name: SubmachineGun
+  m_Name: Rifle 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5613694650824037436
+--- !u!4 &639099215774742639
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5613694650824037430}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.33, y: 1.7228284, z: -20.867683}
+  m_GameObject: {fileID: 258211464035934933}
+  m_LocalRotation: {x: -0.00000032782552, y: 0.70710653, z: -0.0000005188382, w: -0.7071071}
+  m_LocalPosition: {x: 0.002, y: 0.069, z: 0.122}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &5613694650824037427
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 360}
+--- !u!33 &4571526135073273802
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5613694650824037430}
-  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &5613694650824037426
+  m_GameObject: {fileID: 258211464035934933}
+  m_Mesh: {fileID: 1489769429068794750, guid: 2e363af4ad752374c82920d582ca74d0, type: 3}
+--- !u!23 &1771504020840776448
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5613694650824037430}
-  m_Enabled: 0
+  m_GameObject: {fileID: 258211464035934933}
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -64,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6e798c69e4e123549a4bf9e47a11ab19, type: 2}
+  - {fileID: 2100000, guid: 89b8df5766a2dc1459b66909fd2f643e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -86,59 +86,55 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &5613694650824037425
-CapsuleCollider:
+--- !u!64 &8609078102831907424
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5613694650824037430}
+  m_GameObject: {fileID: 258211464035934933}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 0
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
---- !u!114 &5613694650824037424
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 1489769429068794750, guid: 2e363af4ad752374c82920d582ca74d0, type: 3}
+--- !u!114 &1683500156825780498
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5613694650824037430}
+  m_GameObject: {fileID: 258211464035934933}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1421c779ae6a0cb4997c744d3cbc8eed, type: 3}
+  m_Script: {fileID: 11500000, guid: 9dcc34c51dbe124439ba808039d5841c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 0
-  _addedNetworkObject: {fileID: 5613694650824037431}
-  _networkObjectCache: {fileID: 5613694650824037431}
-  consoleTextSpawn: {fileID: 0}
-  weaponType: 2
-  prefab: {fileID: 0}
-  _name: Submachine Gun
-  _damage: 12
+  _addedNetworkObject: {fileID: 6735077600778315481}
+  _networkObjectCache: {fileID: 6735077600778315481}
+  prefab: {fileID: 258211464035934933}
+  _name: Assault Rifle 1
+  _damage: 15
   _range: 30
-  _accuracy: 0.2
-  _fireRate: 0.3
+  _accuracy: 0.5
+  _fireRate: 1
   _fireRateTimer: 0
   _reloadSpeed: 2
   _reloadSpeedTimer: 0
-  fireSound: {fileID: 0}
-  reloadSound: {fileID: 0}
-  _maxAmmoCapacity: 120
-  _maxMagAmmoCapacity: 20
-  _startingAmmo: 60
-  _fireType: 1
---- !u!114 &5613694650824037431
+  _maxAmmoCapacity: 320
+  _maxMagAmmoCapacity: 30
+  _startingAmmo: 90
+  _fireType: 0
+--- !u!114 &6735077600778315481
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5613694650824037430}
+  m_GameObject: {fileID: 258211464035934933}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26b716c41e9b56b4baafaf13a523ba2e, type: 3}
@@ -147,19 +143,25 @@ MonoBehaviour:
   <IsNested>k__BackingField: 0
   <ComponentIndex>k__BackingField: 0
   _networkBehaviours:
-  - {fileID: 5613694650824037424}
+  - {fileID: 1683500156825780498}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
   _isNetworked: 1
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 1
+  <PrefabId>k__BackingField: 25
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 4401005666938072234
+  <AssetPathHash>k__BackingField: 8766057724212124944
   _sceneNetworkObjects:
-  - {fileID: 5613694650824037431}
+  - {fileID: 6735077600778315481}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

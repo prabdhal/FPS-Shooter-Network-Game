@@ -115,14 +115,19 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 5851280946670529312}
   _networkObjectCache: {fileID: 5851280946670529312}
+  consoleTextSpawn: {fileID: 0}
+  weaponType: 1
+  prefab: {fileID: 0}
   _name: Pistol
   _damage: 10
   _range: 15
   _accuracy: 0.2
   _fireRate: 1.5
-  _fireRateTimer: 0
+  _fireRateTimer: 1
   _reloadSpeed: 1
   _reloadSpeedTimer: 0
+  fireSound: {fileID: 0}
+  reloadSound: {fileID: 0}
   _maxAmmoCapacity: 30
   _maxMagAmmoCapacity: 5
   _startingAmmo: 15
@@ -149,7 +154,7 @@ MonoBehaviour:
   _isGlobal: 0
   _defaultDespawnType: 0
   NetworkObserver: {fileID: 0}
-  <PrefabId>k__BackingField: 2
+  <PrefabId>k__BackingField: 6
   _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 6108155915612640176

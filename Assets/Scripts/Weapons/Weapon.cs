@@ -3,8 +3,12 @@ using UnityEngine;
 
 public class Weapon : NetworkBehaviour
 {
+    public ConsoleTextSpawn consoleTextSpawn;
+
     // weapon values
     [Header("Weapon Values")]
+    [SerializeField]
+    private WeaponType weaponType;
     [SerializeField]
     protected GameObject prefab;
     [SerializeField]
@@ -30,6 +34,9 @@ public class Weapon : NetworkBehaviour
     public float ReloadSpeed { get { return _reloadSpeed; } }
     public float _reloadSpeedTimer = 0;
 
+    [Header("Weapon Sound")]
+    public AudioClip fireSound;
+    public AudioClip reloadSound;
 
     // ammo values
     [Header("Ammo Values")]
@@ -57,7 +64,6 @@ public class Weapon : NetworkBehaviour
     public WeaponFireType FireType { get { return _fireType; } }
 
 
-
     private void Start()
     {
         // ensures starting ammo and max mag ammo capacity are lower than max values
@@ -66,9 +72,13 @@ public class Weapon : NetworkBehaviour
         if (_maxMagAmmoCapacity > _maxAmmoCapacity)
             _maxMagAmmoCapacity = _maxAmmoCapacity;
 
-
         _currentAmmo = _startingAmmo;
         _currentMagAmmo = _maxMagAmmoCapacity;
+
+        consoleTextSpawn = GameObject.FindGameObjectWithTag(StringData.PlayerHUDTag).GetComponent<ConsoleTextSpawn>();
+
+        if (!_fireType.Equals(WeaponFireType.Melee))
+            gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -81,7 +91,6 @@ public class Weapon : NetworkBehaviour
         ReloadHander(player);
 
         Vector3 origin = player.vCam.transform.position;
-        Vector3 direction = player.vCam.transform.forward;
         Vector3 spreadDistance = player.vCam.transform.forward + new Vector3(Random.insideUnitCircle.normalized.x * _accuracy, Random.insideUnitCircle.normalized.y * _accuracy, 0f);
 
         Debug.DrawRay(origin, spreadDistance * _range, Color.red);
@@ -102,7 +111,10 @@ public class Weapon : NetworkBehaviour
                 FireRateHandler(player);
             }
             else
+            {
                 _fireRateTimer = 0f;
+                player.SetAnimBool(StringData.IsFiring, false);
+            }
         }
         else if (_fireType.Equals(WeaponFireType.SemiAutomatic))
         {
@@ -111,7 +123,10 @@ public class Weapon : NetworkBehaviour
                 FireRateHandler(player);
             }
             else
+            {
                 _fireRateTimer = 0f;
+                player.SetAnimBool(StringData.IsFiring, false);
+            }
         }
         else if (_fireType.Equals(WeaponFireType.Burst))
         {
@@ -120,7 +135,10 @@ public class Weapon : NetworkBehaviour
                 FireRateHandler(player);
             }
             else
+            {
                 _fireRateTimer = 0f;
+                player.SetAnimBool(StringData.IsFiring, false);
+            }
         }
         else if (_fireType.Equals(WeaponFireType.Melee))
         {
@@ -129,7 +147,10 @@ public class Weapon : NetworkBehaviour
                 FireRateHandler(player);
             }
             else
+            {
                 _fireRateTimer = 0f;
+                player.SetAnimBool(StringData.IsFiring, false);
+            }
         }
     }
 
@@ -142,7 +163,9 @@ public class Weapon : NetworkBehaviour
         // Checks if player has ammo
         if (IsEmptyClip || IsEmptyWeapon)
         {
+            player.SetAnimBool(StringData.IsFiring, false);
             Debug.Log("Player needs to reload!");
+            consoleTextSpawn.SpawnConsoleText("Player needs to reload!");
             return;
         }
 
@@ -151,7 +174,11 @@ public class Weapon : NetworkBehaviour
 
         if (_fireRateTimer <= 0)
         {
+            player.SetAnimBool(StringData.IsFiring, true);
+            player.PlayAnim(StringData.Fire, weaponType);
+
             Debug.Log("Raycast/Bullet fired!");
+            consoleTextSpawn.SpawnConsoleText("Raycast/Bullet fired!");
             ActivateRaycast(player);
             _fireRateTimer = _fireRate;
 
@@ -165,6 +192,7 @@ public class Weapon : NetworkBehaviour
         else
         {
             Debug.Log("Raycast on Cooldown");
+            consoleTextSpawn.SpawnConsoleText("Raycast on Cooldown");
             _fireRateTimer -= Time.deltaTime;
         }
     }
@@ -186,6 +214,7 @@ public class Weapon : NetworkBehaviour
             {
                 PlayerController target = hit.collider.gameObject.GetComponentInParent<PlayerController>();
                 Debug.Log("target: " + target.name);
+                consoleTextSpawn.SpawnConsoleText("target: " + target.name);
                 ApplyDamage(player, target);
             }
         }
@@ -208,10 +237,12 @@ public class Weapon : NetworkBehaviour
                 UpdateKillLog(player, target);
             }
             Debug.Log(-_damage + " points of damage applied to " + target.name);
+            consoleTextSpawn.SpawnConsoleText(-_damage + " points of damage applied to " + target.name);
         }
         else
             Debug.Log("Cannot friendly fire!");
-    }
+        consoleTextSpawn.SpawnConsoleText("Cannot friendly fire!");
+    }   
 
     [ObserversRpc]
     private void UpdateKillLog(PlayerController player, PlayerController target)
@@ -234,10 +265,14 @@ public class Weapon : NetworkBehaviour
             if (IsEmptyWeapon)
             {
                 Debug.Log("You cannot reload since you have no ammo!");
+                consoleTextSpawn.SpawnConsoleText("You cannot reload since you have no ammo!");
                 return;
             }
             _reloadSpeedTimer = 0;
             _isReloading = true;
+
+            player.SetAnimBool(StringData.IsReloading, true);
+            player.PlayAnim(StringData.Reload, weaponType);
             player.playerHUD.UpdateFeedbackText("Reloading...");
         }
     }
@@ -248,7 +283,9 @@ public class Weapon : NetworkBehaviour
     protected virtual void ReloadHander(PlayerController player)
     {
         if (_currentMagAmmo < _maxMagAmmoCapacity)
+        {
             InitiateReload(player);
+        }
 
         // reload after reload time
         if (_reloadSpeedTimer >= _reloadSpeed)
@@ -257,10 +294,13 @@ public class Weapon : NetworkBehaviour
             _reloadSpeedTimer = 0;
             _isReloading = false;
             player.playerHUD.DisableFeedbackText();
+
+            player.SetAnimBool(StringData.IsReloading, false);
         }
         else if (_isReloading)
         {
             Debug.Log("Reloading");
+            consoleTextSpawn.SpawnConsoleText("Reloading");
             _reloadSpeedTimer += Time.deltaTime;
         }
     }
@@ -269,6 +309,8 @@ public class Weapon : NetworkBehaviour
     {
         _reloadSpeedTimer = 0;
         _isReloading = false;
+        player.SetAnimBool(StringData.IsReloading, false);
+
         player.playerHUD.DisableFeedbackText();
     }
 

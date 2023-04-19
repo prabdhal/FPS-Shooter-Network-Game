@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class PlayerController : NetworkBehaviour
 {
+    public ConsoleTextSpawn consoleTextSpawn;
     [Header("Camera References")]
     public Camera cam;
     public CinemachineVirtualCamera vCam;
@@ -52,13 +53,17 @@ public class PlayerController : NetworkBehaviour
     [SyncVar(Channel = Channel.Reliable, OnChange = nameof(UpdateHealthHUD))]
     public float currentHealth = 100f;
 
-    [Header("Weapon")]
+    [Header("Weapon")]  // weapon scripts
     //private GameObject projectilePrefab;
     public Weapon activeWeapon;
     public Weapon defaultWeapon;
     public Weapon pistol;
     public Weapon submachine;
     public bool isFiring = false;
+
+    [Header("Weapon GO")]   // weapon gameobjects on the player
+    public GameObject pistolGO;
+    public GameObject submachineGO;
 
     private Vector3 moveDirection = Vector3.zero;
 
@@ -72,6 +77,10 @@ public class PlayerController : NetworkBehaviour
     private float curSpawnTimer = 0;
     public bool IsDead { get { return isDead; } }
     private bool isDead = false;
+
+    // Events
+    public delegate void OnWeaponSwap(Weapon weapon);
+    public event OnWeaponSwap OnWeaponSwapEvent;
 
 
     public override void OnStartClient()
@@ -96,7 +105,6 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-
     private void Start()
     {
         characterController = GetComponentInChildren<CharacterController>();
@@ -108,6 +116,8 @@ public class PlayerController : NetworkBehaviour
         playerHUD.UpdatePlayerHealth(currentHealth);
         ApplyNameChange();
 
+        consoleTextSpawn = GameObject.FindGameObjectWithTag(StringData.PlayerHUDTag).GetComponent<ConsoleTextSpawn>();
+         
         if (activeWeapon != null)
         {
             playerHUD.UpdateActiveWeapon(activeWeapon.Name);
@@ -188,6 +198,21 @@ public class PlayerController : NetworkBehaviour
         anim.SetBool(StringData.IsRunning, IsRunning);
     }
 
+    public void SetAnimBool(string value, bool fire)
+    {
+        anim.SetBool(value, fire);
+    }
+
+    public void PlayAnim(string animName, WeaponType type)
+    {
+        anim.Play(animName, (int)type);
+    }
+
+    public void SetWeaponAnimSpeed(float speed)
+    {
+        anim.speed = speed;
+    }
+
     #endregion
 
     #region Player Movement Handlers
@@ -208,7 +233,7 @@ public class PlayerController : NetworkBehaviour
     /// </summary>
     private void JumpHandler(float moveDirY)
     {
-        if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
+        if (Input.GetButton(StringData.Jump) && canMove && characterController.isGrounded)
         {
             moveDirection.y = jumpSpeed;
         }
@@ -255,25 +280,74 @@ public class PlayerController : NetworkBehaviour
         {
             if (activeWeapon != null)
                 activeWeapon.CancelReload(this);
+            
             activeWeapon = null;
+            ServerSetWeaponGO(WeaponType.Melee);
+
+            anim.SetLayerWeight((int)WeaponType.Pistol, 0);
+            anim.SetLayerWeight((int)WeaponType.Submachine, 0);
+
             playerHUD.UpdateActiveWeapon(defaultWeapon.Name);
             playerHUD.UpdateAmmo("N", "A");
+
+            OnWeaponSwapEvent?.Invoke(activeWeapon);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             if (activeWeapon != null)
                 activeWeapon.CancelReload(this);
+
             activeWeapon = pistol.GetComponent<Weapon>();
+            ServerSetWeaponGO(WeaponType.Pistol);
+
+            anim.SetLayerWeight((int)WeaponType.Pistol, 1);
+            anim.SetLayerWeight((int)WeaponType.Submachine, 0);
+
             playerHUD.UpdateActiveWeapon(activeWeapon.Name);
             playerHUD.UpdateAmmo(activeWeapon.CurrentMagAmmo.ToString(), activeWeapon.CurrentAmmo.ToString());
+
+            OnWeaponSwapEvent?.Invoke(activeWeapon);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             if (activeWeapon != null)
                 activeWeapon.CancelReload(this);
+
             activeWeapon = submachine.GetComponent<Weapon>();
+            ServerSetWeaponGO(WeaponType.Submachine);
+
+            anim.SetLayerWeight((int)WeaponType.Pistol, 0);
+            anim.SetLayerWeight((int)WeaponType.Submachine, 1);
+
             playerHUD.UpdateActiveWeapon(activeWeapon.Name);
             playerHUD.UpdateAmmo(activeWeapon.CurrentMagAmmo.ToString(), activeWeapon.CurrentAmmo.ToString());
+
+            OnWeaponSwapEvent?.Invoke(activeWeapon);
+        }
+    }
+
+    [ServerRpc]
+    private void ServerSetWeaponGO(WeaponType weaponType)
+    {
+        SetWeaponGO(weaponType);
+    }
+
+    [ObserversRpc]
+    private void SetWeaponGO(WeaponType weaponType)
+    {
+        pistolGO.SetActive(false);
+        submachineGO.SetActive(false);
+
+        switch (weaponType)
+        {
+            case WeaponType.Pistol:
+                pistolGO.SetActive(true);
+                break;
+            case WeaponType.Submachine:
+                submachineGO.SetActive(true);
+                break;
+            default:
+                break;
         }
     }
 
